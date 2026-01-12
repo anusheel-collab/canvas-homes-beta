@@ -2,10 +2,10 @@ import Header from './components/common/DeepSearch/Header'
 import Footer from './components/common/DeepSearch/Footer'
 import Loader from './components/common/DeepSearch/Loader'
 // import Formrenderer from './components/common/DeepSearch/Formrenderer'
-import "./globals.css"
+import "./"
 export default function HomePage() {
   return (
-    <main className="min-h-screen flex flex-col pt-16 bg-grid">
+    <main className="min-h-screen flex flex-col pt-16 bg-grid scale-150">
       {/* Header */}
       <Header />
 
