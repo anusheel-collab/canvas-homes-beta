@@ -1,12 +1,14 @@
-export default function Loader() {
-  const currentStep = 3;
-  const totalSteps = 10;
-  const progressPercentage = (currentStep / totalSteps) * 100;
+"use client";
+
+interface LoaderProps {
+  percentage: number;
+}
+
+export default function Loader({ percentage }: LoaderProps) {
+  const safePercentage = Math.min(Math.max(percentage, 0), 100);
 
   return (
     <div className="w-full px-6">
-      {" "}
-      {/* Full width with same padding as header */}
       <div className="relative w-full" style={{ height: "32px" }}>
         {/* Background: Unfilled progress - color #D4D4D4 - FULL WIDTH */}
         <div
@@ -14,7 +16,7 @@ export default function Loader() {
             position: "absolute",
             top: "50%",
             transform: "translateY(-50%)",
-            width: "100%", // Full width of container
+            width: "100%",
             height: "4px",
             backgroundColor: "#D4D4D4",
             borderRadius: "8px",
@@ -27,10 +29,10 @@ export default function Loader() {
             position: "absolute",
             top: "50%",
             transform: "translateY(-50%)",
-            width: `${progressPercentage}%`, // Percentage of full width
+            width: `${safePercentage}%`,
             height: "4px",
             backgroundColor: "#404040",
-            borderRadius: progressPercentage === 100 ? "8px" : "0 8px 8px 0",
+            borderRadius: safePercentage === 100 ? "8px" : "0 8px 8px 0",
           }}
         />
 
@@ -39,8 +41,12 @@ export default function Loader() {
           style={{
             position: "absolute",
             top: "50%",
-            left: `${progressPercentage}%`, // Position based on percentage of full width
-            transform: "translate(-50%, -50%)",
+            left: `${safePercentage}%`,
+            // Shift head 4px to the left at 0%, otherwise center it
+            transform:
+              safePercentage === 0
+                ? "translate(0px, -50%)" // 4px to the right at 0%
+                : "translate(-50%, -50%)", // Centered for all other positions
             borderRadius: "400px",
             backgroundColor: "#404040",
             display: "inline-flex",
@@ -65,7 +71,7 @@ export default function Loader() {
               whiteSpace: "nowrap",
             }}
           >
-            {progressPercentage.toFixed(0)}%
+            {safePercentage.toFixed(0)}%
           </span>
         </div>
       </div>
