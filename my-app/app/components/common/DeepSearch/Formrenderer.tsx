@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { MapPin, X } from "lucide-react";
+import { MapPin, X, Home } from "lucide-react";
 import { formConfig, FormField } from "./formConfig";
 
 interface FormRendererProps {
@@ -105,9 +105,9 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     switch (field.type) {
       case "autocomplete":
         return (
-          <div className="relative w-full">
-            <div className="flex items-center gap-3 px-4 py-3 border-2 border-gray-300 rounded-xl focus-within:border-purple-600 bg-white transition-colors">
-              {Icon && <Icon className="w-5 h-5 text-gray-400" />}
+          <div className="relative w-full max-w-md mx-auto">
+            <div className="flex items-center gap-3 px-5 py-4 border-2 border-gray-300 rounded-2xl focus-within:border-purple-600 bg-white transition-colors shadow-sm">
+              {Icon && <Icon className="w-5 h-5 text-gray-500" />}
               <input
                 type="text"
                 value={searchQuery[field.name] || ""}
@@ -120,15 +120,19 @@ const FormRenderer: React.FC<FormRendererProps> = ({
             </div>
 
             {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-64 overflow-y-auto">
+              <div className="absolute z-10 w-full mt-3 bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden">
                 {suggestions.map((suggestion, idx) => (
                   <div
                     key={idx}
                     onClick={() => selectSuggestion(field.name, suggestion)}
-                    className="px-4 py-3 hover:bg-gray-50 cursor-pointer flex items-center gap-3 border-b last:border-b-0 transition-colors"
+                    className="px-5 py-4 hover:bg-gray-50 cursor-pointer flex items-center gap-3 border-b last:border-b-0 transition-colors"
                   >
-                    <MapPin className="w-4 h-4 text-gray-400" />
-                    <span className="text-gray-700">{suggestion}</span>
+                    <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <MapPin className="w-5 h-5 text-gray-600" />
+                    </div>
+                    <span className="text-gray-700 font-medium">
+                      {suggestion}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -154,30 +158,32 @@ const FormRenderer: React.FC<FormRendererProps> = ({
             : options;
 
         return (
-          <div className="w-full space-y-4">
+          <div className="w-full space-y-6 max-w-4xl mx-auto">
             {isSearchable && (
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) =>
-                  setSearchQuery((prev) => ({
-                    ...prev,
-                    [field.name]: e.target.value,
-                  }))
-                }
-                placeholder={field.searchPlaceholder || "Search..."}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-purple-600 outline-none"
-              />
+              <div className="max-w-xl mx-auto">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) =>
+                    setSearchQuery((prev) => ({
+                      ...prev,
+                      [field.name]: e.target.value,
+                    }))
+                  }
+                  placeholder={field.searchPlaceholder || "Search..."}
+                  className="w-full px-5 py-4 border-2 border-gray-300 rounded-2xl focus:border-purple-600 outline-none shadow-sm"
+                />
+              </div>
             )}
 
             {selectedValues.length > 0 && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 justify-center">
                 {selectedValues.map((val) => {
                   const opt = options.find((o) => o.value === val);
                   return (
                     <div
                       key={val}
-                      className="px-3 py-1.5 bg-purple-100 text-purple-700 rounded-full text-sm font-medium flex items-center gap-2"
+                      className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-medium flex items-center gap-2 border border-gray-300"
                     >
                       {opt?.label}
                       <button
@@ -188,7 +194,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                           )
                         }
                       >
-                        <X className="w-3.5 h-3.5" />
+                        <X className="w-4 h-4" />
                       </button>
                     </div>
                   );
@@ -196,7 +202,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
               </div>
             )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="flex flex-wrap justify-center gap-4">
               {filteredOptions.map((option) => {
                 const isSelected = selectedValues.includes(option.value);
 
@@ -211,18 +217,61 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                           : [...selectedValues, option.value]
                       )
                     }
-                    className={`p-4 border-2 rounded-xl text-left transition-all ${
+                    className={`relative p-6 border-2 rounded-2xl text-center transition-all min-w-[160px] ${
                       isSelected
-                        ? "border-purple-600 bg-purple-50"
-                        : "border-gray-200 hover:border-gray-400"
+                        ? "border-black bg-white shadow-md"
+                        : "border-gray-300 bg-white hover:border-gray-400 shadow-sm"
                     }`}
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-col items-center gap-3">
                       {option.icon && (
-                        <span className="text-3xl">{option.icon}</span>
+                        <div className="w-24 h-24 flex items-center justify-center">
+                          <img
+                            src={`/${
+                              option.value === "plot"
+                                ? "Plot"
+                                : option.value === "apartment"
+                                ? "Apartment"
+                                : option.value === "villa"
+                                ? "Villa"
+                                : option.value === "villament"
+                                ? "Villament"
+                                : option.value === "rowhouses"
+                                ? "RowHouses"
+                                : "Plot"
+                            }.svg`}
+                            alt={option.label}
+                            className="w-full h-full object-contain"
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                              e.currentTarget.parentElement!.innerHTML = `<span class="text-4xl">${option.icon}</span>`;
+                            }}
+                          />
+                        </div>
                       )}
-                      <div className="flex-1 font-semibold text-gray-800">
+                      <div className="font-semibold text-gray-800 text-lg">
                         {option.label}
+                      </div>
+                      <div
+                        className={`w-5 h-5 border-2 rounded ${
+                          isSelected
+                            ? "bg-black border-black"
+                            : "border-gray-300 bg-white"
+                        } flex items-center justify-center`}
+                      >
+                        {isSelected && (
+                          <svg
+                            className="w-3 h-3 text-white"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        )}
                       </div>
                     </div>
                   </button>
@@ -237,20 +286,91 @@ const FormRenderer: React.FC<FormRendererProps> = ({
         const selectedValue = formData[field.name];
 
         return (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            {field.options?.map((option) => (
-              <button
-                key={option.value}
-                onClick={() => handleFieldChange(field.name, option.value)}
-                className={`px-4 py-3 border-2 rounded-xl font-medium ${
-                  selectedValue === option.value
-                    ? "border-purple-600 bg-purple-50 text-purple-700"
-                    : "border-gray-200 text-gray-700"
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
+          <div className="space-y-6">
+            {field.label === "Project Type" ? (
+              <div className="flex flex-wrap justify-center gap-4">
+                {field.options?.map((option) => {
+                  const isSelected = selectedValue === option.value;
+                  return (
+                    <button
+                      key={option.value}
+                      onClick={() =>
+                        handleFieldChange(field.name, option.value)
+                      }
+                      className={`relative p-6 border-2 rounded-2xl text-center transition-all min-w-[200px] ${
+                        isSelected
+                          ? "border-black bg-white shadow-md"
+                          : "border-gray-300 bg-white hover:border-gray-400 shadow-sm"
+                      }`}
+                    >
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="w-32 h-32 flex items-center justify-center">
+                          <img
+                            src={`/${
+                              option.value === "prelaunch"
+                                ? "PreLaunch"
+                                : option.value === "underconstruction"
+                                ? "UnderConstruction"
+                                : "ReadyToMove"
+                            }.svg`}
+                            alt={option.label}
+                            className="w-full h-full object-contain"
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                            }}
+                          />
+                        </div>
+                        <div className="font-semibold text-gray-800 text-lg">
+                          {option.label}
+                        </div>
+                        <div
+                          className={`w-5 h-5 border-2 rounded ${
+                            isSelected
+                              ? "bg-black border-black"
+                              : "border-gray-300 bg-white"
+                          } flex items-center justify-center`}
+                        >
+                          {isSelected && (
+                            <svg
+                              className="w-3 h-3 text-white"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="flex flex-wrap justify-center gap-3">
+                {field.options?.map((option) => {
+                  const isSelected = selectedValue === option.value;
+                  return (
+                    <button
+                      key={option.value}
+                      onClick={() =>
+                        handleFieldChange(field.name, option.value)
+                      }
+                      className={`px-6 py-3 border-2 rounded-xl font-medium transition-all ${
+                        isSelected
+                          ? "border-black bg-black text-white"
+                          : "border-gray-300 text-gray-700 hover:border-gray-400"
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         );
       }
@@ -262,24 +382,53 @@ const FormRenderer: React.FC<FormRendererProps> = ({
         };
 
         const formatFn =
-          field.formatValue || ((v: number) => `${v} ${field.unit}`);
+          field.formatValue || ((v: number) => `${v.toLocaleString()}`);
 
         return (
-          <div className="flex gap-4">
-            {["min", "max"].map((key) => (
-              <input
-                key={key}
-                type="number"
-                value={rangeValue[key]}
-                onChange={(e) =>
-                  handleFieldChange(field.name, {
-                    ...rangeValue,
-                    [key]: parseInt(e.target.value),
-                  })
-                }
-                className="flex-1 px-4 py-3 border-2 rounded-xl"
-              />
-            ))}
+          <div className="max-w-2xl mx-auto space-y-8">
+            <div className="flex justify-center items-center gap-6">
+              <div className="flex-1 max-w-xs">
+                <div className="border-2 border-gray-300 rounded-2xl p-5 bg-white shadow-sm">
+                  <div className="text-sm text-gray-500 mb-2">From</div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-2xl font-bold text-gray-800">
+                      {formatFn(rangeValue.min)}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-400 mt-1">
+                    ₹{(rangeValue.min / 100000).toFixed(2)} Lac
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex-1 max-w-xs">
+                <div className="border-2 border-gray-300 rounded-2xl p-5 bg-white shadow-sm">
+                  <div className="text-sm text-gray-500 mb-2">To</div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-2xl font-bold text-gray-800">
+                      {formatFn(rangeValue.max)}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-400 mt-1">
+                    ₹{(rangeValue.max / 10000000).toFixed(1)} Crs
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <input
+              type="range"
+              min={field.minValue}
+              max={field.maxValue}
+              value={rangeValue.min}
+              onChange={(e) =>
+                handleFieldChange(field.name, {
+                  ...rangeValue,
+                  min: parseInt(e.target.value),
+                })
+              }
+              className="w-full"
+            />
           </div>
         );
       }
@@ -289,20 +438,54 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     }
   };
 
+  // Mock inventory count based on step
+  const inventoryCount =
+    currentStep === 0
+      ? "10,166"
+      : currentStep === 1
+      ? "2,000"
+      : currentStep === 2
+      ? "800"
+      : currentStep === 3
+      ? "600"
+      : currentStep === 4
+      ? "200"
+      : "10,056";
+
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="bg-white rounded-3xl shadow-lg p-8">
-        <h2 className="text-2xl md:text-3xl font-bold mb-8 text-gray-800">
+        {/* Inventory badge */}
+        <div className="flex justify-center mb-8">
+          <div className="inline-flex items-center gap-2 px-6 py-3 bg-teal-50 text-teal-700 rounded-full border border-teal-200">
+            <Home className="w-5 h-5" />
+            <span className="font-semibold">
+              {inventoryCount} Inventory{" "}
+              {currentStep === 0 ? "Available" : "Matched"}
+            </span>
+          </div>
+        </div>
+
+        {/* Title */}
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-900 max-w-3xl mx-auto leading-tight">
           {currentStepConfig.title}
         </h2>
 
-        <div className="space-y-6">
+        {/* Form fields */}
+        <div className="space-y-8">
           {visibleFields.map((field) => (
-            <div key={field.name} className="space-y-3">
-              <label className="block text-sm font-semibold text-gray-700">
-                {field.label}
-                {field.required && <span className="text-red-500 ml-1">*</span>}
-              </label>
+            <div key={field.name} className="space-y-4">
+              {field.label !== "Property Type" &&
+                field.label !== "BHK Configuration" &&
+                field.label !== "Project Type" &&
+                field.label !== "Budget Range" && (
+                  <label className="block text-sm font-semibold text-gray-700 text-center">
+                    {field.label}
+                    {field.required && (
+                      <span className="text-red-500 ml-1">*</span>
+                    )}
+                  </label>
+                )}
               {renderField(field)}
             </div>
           ))}
