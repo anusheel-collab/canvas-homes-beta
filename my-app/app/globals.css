@@ -2,5 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Light gray grid background (clearly visible) */
+/* -----------------------------
+   Disable scroll globally
+------------------------------ */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+}
 
+/* -----------------------------
+   Grid + Background image
+------------------------------ */
+.bg-grid {
+  background-color: #fafafa;
+
+  background-image: url("/background.png"),
+    /* correct path */ linear-gradient(to right, #d1d5db 1px, transparent 1px),
+    linear-gradient(to bottom, #d1d5db 1px, transparent 1px);
+
+  background-repeat: no-repeat, repeat, repeat;
+
+  background-position: center top, left top, left top;
+
+  background-size: cover, 48px 48px, 48px 48px;
+}

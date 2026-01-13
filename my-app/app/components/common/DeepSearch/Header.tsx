@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import CloseButton from "./close"; // Assuming close.tsx is in the same directory
 
 export default function Header() {
   return (
@@ -16,12 +17,12 @@ export default function Header() {
         flex
         items-center
         justify-between
-        border-b
         bg-[#FAFAFA]
+        pt-[2px]  {/* Add 2px top padding */}
       "
     >
       {/* Left: Logo Button */}
-      <Link href="/" aria-label="Go to home">
+      <Link href="/" aria-label="Go to home" className="relative left-[8px]">
         <Image
           src="/Logo.svg"
           alt="Logo"
@@ -32,50 +33,10 @@ export default function Header() {
         />
       </Link>
 
-      {/* Right: Close Button */}
-<button
-  aria-label="Close"
-//   onClick={() => console.log("Close clicked")}
-  className="
-    relative
-    left-[-15px]
-    top-[-2px]
-
-    w-[93px]
-    h-[37px]
-    flex
-    items-center
-    justify-center
-
-    rounded-md
-    bg-white
-    border
-    border-gray-200
-
-    shadow-[0_2px_4px_rgba(0,0,0,0.08)]
-    transition-all
-    duration-150
-    ease-out
-
-    hover:shadow-[0_4px_8px_rgba(0,0,0,0.12)]
-    hover:-translate-y-[1px]
-
-    active:translate-y-[1px]
-    active:shadow-[0_1px_2px_rgba(0,0,0,0.12)]
-
-    cursor-pointer
-    select-none
-  "
->
-  <Image
-    src="/close.svg"
-    alt="Close"
-    fill
-    className="object-contain pointer-events-none"
-  />
-</button>
-
-
+      {/* Right: Close Button Component */}
+      <div className="relative left-[-15px] top-[-2px]">
+        <CloseButton />
+      </div>
     </header>
   );
 }
