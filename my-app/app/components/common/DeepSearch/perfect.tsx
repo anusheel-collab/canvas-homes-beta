@@ -1,13 +1,20 @@
 "use client";
 
-import { useState } from "react";
+interface PerfectButtonProps {
+  onClick?: () => void;
+  disabled?: boolean;
+  label?: string;
+}
 
-export default function PerfectButton() {
-  const [isClicked, setIsClicked] = useState(false);
-
+export default function PerfectButton({
+  onClick,
+  disabled = false,
+  label = "Yes. It is perfect",
+}: PerfectButtonProps) {
   return (
     <button
-      onClick={() => setIsClicked(!isClicked)}
+      onClick={onClick}
+      disabled={disabled}
       className={`
         flex
         items-center
@@ -23,12 +30,16 @@ export default function PerfectButton() {
         select-none
         whitespace-nowrap
         
-        ${isClicked ? "bg-[#6B21A8]" : "bg-[#E5E5E5]"}
+        ${disabled ? "bg-[#E5E5E5]" : "bg-[#6B21A8]"}
         
         hover:-translate-y-[1px]
         hover:shadow-md
         active:translate-y-[1px]
         active:shadow-sm
+
+        disabled:cursor-not-allowed
+        disabled:hover:translate-y-0
+        disabled:hover:shadow-none
       `}
       style={{
         padding: "12px 62px",
@@ -37,10 +48,10 @@ export default function PerfectButton() {
         fontSize: "16px",
         fontWeight: 600,
         lineHeight: "150%",
-        color: isClicked ? "#FFFFFF" : "#737373", // Use style prop for color
+        color: disabled ? "#737373" : "#FFFFFF",
       }}
     >
-      Yes. It is perfect
+      {label}
     </button>
   );
 }

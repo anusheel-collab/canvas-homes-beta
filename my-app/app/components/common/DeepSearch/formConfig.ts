@@ -37,8 +37,9 @@ export interface FormField {
 
 export interface FormStep {
   id: string;
-  title: string;
+  title: string | ((formData: any) => string);
   fields: FormField[];
+  condition?: (formData: any) => boolean; // Optional condition for showing the step
 }
 
 export interface FormConfig {
@@ -97,9 +98,10 @@ export const formConfig: FormConfig = {
       ],
     },
 
+    // Plot size step (only shown if plot is selected)
     {
-      id: "propertyDetails",
-      title: "Perfect. Which specific configurations do you have in mind?",
+      id: "plotSize",
+      title: "Understood. What range of plot size are you looking for?",
       fields: [
         {
           name: "plotSize",
@@ -111,8 +113,19 @@ export const formConfig: FormConfig = {
           minValue: 0,
           maxValue: 50000,
           step: 1000,
-          condition: (formData: any) => formData.propertyType?.includes("plot"),
         },
+      ],
+      condition: (formData: any) => {
+        const selectedTypes = formData?.propertyType || [];
+        return selectedTypes.includes("plot");
+      },
+    },
+
+    // Configuration step (only shown if non-plot types are selected)
+    {
+      id: "configuration",
+      title: "Perfect. Which specific configurations do you have in mind?",
+      fields: [
         {
           name: "configuration",
           type: "multiselect",
@@ -130,25 +143,35 @@ export const formConfig: FormConfig = {
             { value: "4bhk", label: "4 BHK" },
             { value: "5+bhk", label: "5+ BHK" },
           ],
-          condition: (formData: any) => {
-            const types = formData.propertyType || [];
-            return types.some((t: string) =>
-              ["apartment", "villa", "villament", "rowHouses"].includes(t)
-            );
-          },
           filterOptions: (options: any[], formData: any) => {
             const types = formData.propertyType || [];
+            const hasApartment = types.includes("apartment");
+            
+            // Show studio only if apartment is selected
+            if (!hasApartment) {
+              options = options.filter((opt) => opt.value !== "studio");
+            }
+            
+            // Remove 1bhk for villa, villament, rowHouses
             if (
               types.some((t: string) =>
                 ["villa", "villament", "rowHouses"].includes(t)
               )
             ) {
-              return options.filter((opt) => opt.value !== "1bhk");
+              options = options.filter((opt) => opt.value !== "1bhk");
             }
+            
             return options;
           },
         },
       ],
+      condition: (formData: any) => {
+        const selectedTypes = formData?.propertyType || [];
+        // Show if any non-plot type is selected
+        return selectedTypes.some((type: string) => 
+          ["apartment", "villa", "villament", "rowHouses"].includes(type)
+        );
+      },
     },
 
     {

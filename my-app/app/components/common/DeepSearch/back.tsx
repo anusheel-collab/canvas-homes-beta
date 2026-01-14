@@ -2,16 +2,19 @@ interface BackButtonProps {
   label?: string;
   className?: string;
   disabled?: boolean;
+  onClick?: () => void;
 }
 
 export default function BackButton({
   label = "Back",
   className = "",
   disabled = false,
+  onClick,
 }: BackButtonProps) {
   return (
     <button
       disabled={disabled}
+      onClick={onClick}
       style={{
         fontSize: "16px",
       }}
@@ -46,9 +49,7 @@ export default function BackButton({
         ${className}
       `}
     >
-      {/* Arrow icon from public folder */}
       <img src="/arrow-left.svg" alt="Back arrow" className="w-5 h-5" />
-
       {label}
     </button>
   );

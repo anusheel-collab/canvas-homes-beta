@@ -1,15 +1,18 @@
 interface SkipButtonProps {
   className?: string;
   disabled?: boolean;
+  onClick?: () => void;
 }
 
 export default function SkipButton({
   className = "",
   disabled = false,
+  onClick,
 }: SkipButtonProps) {
   return (
     <button
       disabled={disabled}
+      onClick={onClick}
       className={`
         bg-transparent
         border-none
@@ -18,7 +21,7 @@ export default function SkipButton({
         m-0
         
         text-gray-700
-        text-[16px]                 {/* 16px exact size */}
+        text-[16px]
         font-medium
         underline
         underline-offset-2
