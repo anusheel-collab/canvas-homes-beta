@@ -1,11 +1,16 @@
 "use client";
-
+import Checkbox from "@mui/material/Checkbox";
 import React, { useState, useMemo, useEffect } from "react";
 import { MapPin, X, Home } from "lucide-react";
 import { formConfig, FormField, FormStep } from "./formConfig";
 import RangeSlider from "./RangeSlider";
 import { cn } from "./utils/cn";
 
+// ============================================
+// INTERFACE DEFINITIONS
+// ============================================
+
+// Props for FormRenderer component
 interface FormRendererProps {
   onStepChange: (currentStep: number) => void;
   currentStep: number;
@@ -13,13 +18,19 @@ interface FormRendererProps {
   onFormDataUpdate?: (formData: any) => void;
 }
 
+// Interface for form data structure
 interface FormData {
   [key: string]: any;
 }
 
+// Interface for search queries
 interface SearchQuery {
   [key: string]: string;
 }
+
+// ============================================
+// MAIN FORM RENDERER COMPONENT
+// ============================================
 
 const FormRenderer: React.FC<FormRendererProps> = ({
   onStepChange,
@@ -27,12 +38,27 @@ const FormRenderer: React.FC<FormRendererProps> = ({
   onValidationChange,
   onFormDataUpdate,
 }) => {
+  // ============================================
+  // STATE MANAGEMENT
+  // ============================================
+
+  // Stores all form field values
   const [formData, setFormData] = useState<FormData>({});
+
+  // Stores autocomplete suggestions
   const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  // Controls visibility of suggestions dropdown
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
+
+  // Stores search queries for different fields
   const [searchQuery, setSearchQuery] = useState<SearchQuery>({});
 
-  // Filter steps based on conditions
+  // ============================================
+  // STEP FILTERING LOGIC
+  // ============================================
+
+  // Filters steps based on conditions (e.g., show plotSize only if plot is selected)
   const getVisibleSteps = useMemo(() => {
     return formConfig.steps.filter((step) => {
       if (!step.condition) return true;
@@ -40,12 +66,16 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     });
   }, [formData]);
 
-  // Get the current step from visible steps
+  // Gets current step from visible steps array
   const currentVisibleStep = getVisibleSteps[currentStep];
   const currentStepConfig = currentVisibleStep;
   const totalVisibleSteps = getVisibleSteps.length;
 
-  // Safe function to get dynamic title based on form data
+  // ============================================
+  // DYNAMIC TITLE HANDLING
+  // ============================================
+
+  // Gets step title (can be string or function)
   const getStepTitle = (step: FormStep | undefined) => {
     if (!step) return "";
 
@@ -57,6 +87,11 @@ const FormRenderer: React.FC<FormRendererProps> = ({
 
   const currentTitle = getStepTitle(currentStepConfig);
 
+  // ============================================
+  // FIELD FILTERING LOGIC
+  // ============================================
+
+  // Filters fields based on conditions within current step
   const visibleFields = useMemo(() => {
     if (!currentStepConfig) return [];
 
@@ -68,6 +103,11 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     );
   }, [currentStepConfig, formData]);
 
+  // ============================================
+  // VALIDATION LOGIC
+  // ============================================
+
+  // Validates if current step is complete
   const isStepValid = useMemo(() => {
     if (!currentStepConfig) return false;
 
@@ -87,23 +127,35 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     });
   }, [visibleFields, formData, currentStepConfig]);
 
+  // ============================================
+  // EFFECTS FOR PARENT COMMUNICATION
+  // ============================================
+
+  // Notifies parent when validation changes
   useEffect(() => {
     if (onValidationChange) {
       onValidationChange(isStepValid);
     }
   }, [isStepValid, onValidationChange]);
 
+  // Notifies parent when form data updates
   useEffect(() => {
     if (onFormDataUpdate) {
       onFormDataUpdate(formData);
     }
   }, [formData, onFormDataUpdate]);
 
+  // ============================================
+  // EVENT HANDLERS
+  // ============================================
+
+  // Handles field value changes
   const handleFieldChange = (fieldName: string, value: any) => {
     const newFormData = { ...formData, [fieldName]: value };
     setFormData(newFormData);
   };
 
+  // Handles autocomplete search input
   const handleAutocomplete = (
     fieldName: string,
     query: string,
@@ -121,6 +173,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     }
   };
 
+  // Handles suggestion selection
   const selectSuggestion = (fieldName: string, value: string) => {
     handleFieldChange(fieldName, value);
     setSearchQuery((prev) => ({ ...prev, [fieldName]: value }));
@@ -128,13 +181,22 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     setSuggestions([]);
   };
 
+  // ============================================
+  // FIELD RENDERER FUNCTION
+  // ============================================
+
+  // Renders different field types based on field.type
   const renderField = (field: FormField) => {
     const Icon = field.icon;
 
     switch (field.type) {
+      // ============================================
+      // LOCATION SEARCH PAGE - AUTOCOMPLETE FIELD
+      // ============================================
       case "autocomplete":
         return (
           <div className="relative w-full max-w-[470px] mx-auto">
+            {/* SEARCH BAR CONTAINER */}
             <div
               className="flex items-center gap-3 bg-white transition-colors"
               style={{
@@ -146,7 +208,10 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                 borderRadius: "6px",
               }}
             >
+              {/* MAP ICON */}
               {Icon && <Icon className="w-5 h-5 text-[#737373]" />}
+
+              {/* SEARCH INPUT FIELD */}
               <input
                 type="text"
                 value={searchQuery[field.name] || ""}
@@ -167,6 +232,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
               />
             </div>
 
+            {/* SUGGESTIONS DROPDOWN */}
             {showSuggestions && suggestions.length > 0 && (
               <div
                 className="absolute z-10 w-full bg-white border-2 rounded-2xl shadow-xl overflow-hidden"
@@ -181,15 +247,19 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                   marginTop: "8px",
                 }}
               >
+                {/* INDIVIDUAL SUGGESTION ITEMS */}
                 {suggestions.map((suggestion, idx) => (
                   <div
                     key={idx}
                     onClick={() => selectSuggestion(field.name, suggestion)}
                     className="px-5 py-[8px] hover:bg-gray-50 cursor-pointer flex items-center gap-3 last:border-b-0 transition-colors"
                   >
+                    {/* SUGGESTION ICON CONTAINER */}
                     <div className="w-10 h-10 bg-[#D4D4D4] rounded-[8px] px-[12px] py-[12px] flex items-center justify-center hover:bg-[#F5F5F5] transition-colors">
                       <MapPin className="w-5 h-5 stroke-[#525252]" />
                     </div>
+
+                    {/* SUGGESTION TEXT */}
                     <span
                       className="text-gray-700 font-medium"
                       style={{
@@ -207,6 +277,9 @@ const FormRenderer: React.FC<FormRendererProps> = ({
           </div>
         );
 
+      // ============================================
+      // PROPERTY TYPE & DEVELOPER PAGES - MULTISELECT FIELDS
+      // ============================================
       case "multiselect":
       case "multiselect-search": {
         const options = field.filterOptions
@@ -226,11 +299,13 @@ const FormRenderer: React.FC<FormRendererProps> = ({
 
         return (
           <div className="w-full space-y-6 max-w-4xl mx-auto">
+            {/* DEVELOPER SEARCH (MULTISELECT-SEARCH) */}
             {isSearchable && (
               <div
                 className="max-w-[448px] mx-auto bg-white border-2 rounded-2xl p-3"
                 style={{ borderColor: "#D4D4D4" }}
               >
+                {/* SELECTED DEVELOPERS TAGS */}
                 {selectedValues.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-3 px-1">
                     <div
@@ -241,12 +316,12 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                         fontWeight: 600,
                       }}
                     >
-                      <img
+                      {/* <img
                         src="/home.svg"
                         alt="Developers"
                         className="w-5 h-5"
-                      />
-                      <span>Developers</span>
+                      /> */}
+                      {/* <span>Developers</span> */}
                     </div>
                     {selectedValues.map((val) => {
                       const opt = options.find((o) => o.value === val);
@@ -276,6 +351,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                   </div>
                 )}
 
+                {/* DEVELOPER SEARCH INPUT */}
                 <div className="relative mb-3">
                   <input
                     type="text"
@@ -296,6 +372,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                   />
                 </div>
 
+                {/* DEVELOPER OPTIONS LIST */}
                 <div className="space-y-0 max-h-[150px] overflow-y-auto">
                   {filteredOptions.map((option) => {
                     const isSelected = selectedValues.includes(option.value);
@@ -312,6 +389,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                         }
                         className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer rounded-lg"
                       >
+                        {/* CHECKBOX FOR DEVELOPER SELECTION */}
                         <div
                           className={`w-6 h-6 border-2 rounded flex items-center justify-center ${
                             isSelected
@@ -334,6 +412,8 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                             </svg>
                           )}
                         </div>
+
+                        {/* DEVELOPER NAME */}
                         <span
                           className="text-gray-800 font-medium"
                           style={{
@@ -350,8 +430,16 @@ const FormRenderer: React.FC<FormRendererProps> = ({
               </div>
             )}
 
+            {/* PROPERTY TYPE SELECTION (MULTISELECT - VISUAL) */}
             {!isSearchable && (
-              <div className="flex flex-wrap justify-center gap-6">
+              <div
+                className="flex flex-wrap justify-center"
+                style={{
+                  gap: "24px",
+                  maxWidth: "calc(3 * 168px + 2 * 24px)", // Maximum width for 3 items
+                  margin: "0 auto", // Center the container
+                }}
+              >
                 {filteredOptions.map((option) => {
                   const isSelected = selectedValues.includes(option.value);
 
@@ -371,17 +459,22 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                       }`}
                       style={{
                         width: "168px",
+                        backgroundColor: "#FAFAFA",
                         paddingTop: "12px",
                         paddingBottom: "20px",
                         paddingLeft: "16px",
                         paddingRight: "16px",
-                        borderColor: isSelected ? "#000000" : "#A3A3A3",
+                        border: isSelected
+                          ? "1px solid #000000"
+                          : "1px solid #A3A3A3", // 1px border
+
                         borderRadius: "16px",
                       }}
                     >
                       <div className="flex flex-col items-center gap-3">
+                        {/* PROPERTY TYPE ICON */}
                         {option.icon && (
-                          <div className="w-full h-32 flex items-center justify-center">
+                          <div className="w-[165px] h-[120px] flex items-center justify-center">
                             <img
                               src={`/${
                                 option.value === "plot"
@@ -392,7 +485,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                                   ? "Villa"
                                   : option.value === "villament"
                                   ? "Villament"
-                                  : option.value === "rowhouses"
+                                  : option.value === "rowHouses"
                                   ? "RowHouses"
                                   : "Plot"
                               }.svg`}
@@ -404,38 +497,45 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                             />
                           </div>
                         )}
+
+                        {/* PROPERTY TYPE LABEL */}
                         <div
                           className="font-semibold text-gray-800"
                           style={{
                             fontFamily: "Manrope, sans-serif",
                             fontSize: "18px",
                             fontWeight: 600,
+                            width: "168px",
+                            height: "36px",
                           }}
                         >
                           {option.label}
                         </div>
-                        <div
-                          className={`w-6 h-6 border-2 flex items-center justify-center ${
-                            isSelected
-                              ? "bg-black border-black"
-                              : "border-gray-400 bg-white"
-                          }`}
-                          style={{ borderRadius: "4px" }}
-                        >
-                          {isSelected && (
-                            <svg
-                              className="w-4 h-4 text-white"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          )}
-                        </div>
+
+                        {/* SELECTION CHECKBOX */}
+                        <Checkbox
+                          checked={isSelected}
+                          onChange={() =>
+                            handleFieldChange(
+                              field.name,
+                              isSelected
+                                ? selectedValues.filter(
+                                    (v) => v !== option.value
+                                  )
+                                : [...selectedValues, option.value]
+                            )
+                          }
+                          size="small"
+                          sx={{
+                            color: "#D1D5DB",
+                            "&.Mui-checked": {
+                              color: "#000000",
+                            },
+                            "& .MuiSvgIcon-root": {
+                              fontSize: 29,
+                            },
+                          }}
+                        />
                       </div>
                     </button>
                   );
@@ -446,11 +546,15 @@ const FormRenderer: React.FC<FormRendererProps> = ({
         );
       }
 
+      // ============================================
+      // POSSESSION BY & PROJECT TYPE PAGES - SINGLE SELECT FIELDS
+      // ============================================
       case "singleselect": {
         const selectedValue = formData[field.name];
 
         return (
           <div className="space-y-6">
+            {/* PROJECT TYPE SELECTION (VISUAL CARDS) */}
             {field.label === "Project Type" ? (
               <div className="flex flex-wrap justify-center gap-6">
                 {field.options?.map((option) => {
@@ -475,6 +579,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                       }}
                     >
                       <div className="flex flex-col items-center gap-3">
+                        {/* PROJECT TYPE ICON */}
                         <div className="w-full h-32 flex items-center justify-center">
                           <img
                             src={`/${
@@ -491,6 +596,8 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                             }}
                           />
                         </div>
+
+                        {/* PROJECT TYPE LABEL */}
                         <div
                           className="font-semibold text-gray-800"
                           style={{
@@ -501,6 +608,8 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                         >
                           {option.label}
                         </div>
+
+                        {/* SELECTION RADIO BUTTON */}
                         <div
                           className={`w-6 h-6 border-2 flex items-center justify-center ${
                             isSelected
@@ -529,6 +638,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                 })}
               </div>
             ) : (
+              /* POSSESSION BY SELECTION (BUTTONS) */
               <div className="flex flex-wrap justify-center gap-6">
                 {field.options?.map((option) => {
                   const isSelected = selectedValue === option.value;
@@ -568,6 +678,9 @@ const FormRenderer: React.FC<FormRendererProps> = ({
         );
       }
 
+      // ============================================
+      // BUDGET & PLOT SIZE PAGES - RANGE SLIDER FIELDS
+      // ============================================
       case "range": {
         const rangeValue = formData[field.name] || {
           min: field.minValue,
@@ -600,6 +713,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
 
         return (
           <div className="max-w-2xl mx-auto space-y-8">
+            {/* RANGE SLIDER */}
             <div className="px-4">
               <RangeSlider
                 range
@@ -611,7 +725,9 @@ const FormRenderer: React.FC<FormRendererProps> = ({
               />
             </div>
 
+            {/* MIN AND MAX VALUE INPUTS */}
             <div className="flex items-center justify-center gap-6">
+              {/* MIN VALUE INPUT */}
               <div className="flex-1 max-w-xs">
                 <div
                   className="overflow-hidden border-2 rounded-2xl bg-white shadow-sm"
@@ -652,6 +768,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                 </div>
               </div>
 
+              {/* MAX VALUE INPUT */}
               <div className="flex-1 max-w-xs">
                 <div
                   className="overflow-hidden border-2 rounded-2xl bg-white shadow-sm"
@@ -700,19 +817,27 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     }
   };
 
-  // Mock inventory count based on step
+  // ============================================
+  // INVENTORY COUNT DISPLAY LOGIC
+  // ============================================
+
+  // Mock inventory count based on current step
   const inventoryCount =
     currentStep === 0
-      ? "10,166"
+      ? "10,166" // Location step
       : currentStep === 1
-      ? "2,000"
+      ? "2,000" // Property type step
       : currentStep === 2
-      ? "800"
+      ? "800" // Plot size step
       : currentStep === 3
-      ? "600"
+      ? "600" // Configuration step
       : currentStep === 4
-      ? "200"
-      : "10,056";
+      ? "200" // Budget step
+      : "10,056"; // Other steps
+
+  // ============================================
+  // LOADING STATE
+  // ============================================
 
   if (!currentStepConfig) {
     return (
@@ -724,10 +849,15 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     );
   }
 
+  // ============================================
+  // MAIN RENDER
+  // ============================================
+
   return (
     <div className="w-full max-w-4xl mx-auto px-4">
+      {/* FORM CONTAINER */}
       <div className="bg-white rounded-3xl shadow-lg p-8">
-        {/* Inventory badge */}
+        {/* INVENTORY BADGE */}
         <div className="flex justify-center mb-8">
           <div
             className="inline-flex items-center gap-2 rounded-full"
@@ -754,7 +884,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
           </div>
         </div>
 
-        {/* Title - now dynamic based on form data */}
+        {/* STEP TITLE */}
         <h2
           className="text-center mb-12 max-w-3xl mx-auto leading-tight"
           style={{
@@ -767,7 +897,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
           {currentTitle}
         </h2>
 
-        {/* Form fields */}
+        {/* FORM FIELDS CONTAINER */}
         <div className="space-y-8">
           {visibleFields.map((field) => (
             <div key={field.name} className="space-y-4">
@@ -776,8 +906,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
           ))}
         </div>
 
-        {/* REMOVED: Navigation buttons section */}
-        {/* The buttons are now only in the Footer component */}
+        {/* NOTE: Navigation buttons are in Footer component */}
       </div>
     </div>
   );
