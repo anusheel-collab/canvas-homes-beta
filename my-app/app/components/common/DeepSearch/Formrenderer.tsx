@@ -136,8 +136,15 @@ const FormRenderer: React.FC<FormRendererProps> = ({
         return (
           <div className="relative w-full max-w-[470px] mx-auto">
             <div
-              className="flex items-center gap-3 px-4 py-3 border-2 rounded-2xl focus-within:border-[#D4D4D4] bg-white transition-colors"
-              style={{ borderColor: "#D4D4D4" }}
+              className="flex items-center gap-3 bg-white transition-colors"
+              style={{
+                border: "1px solid #D4D4D4",
+                paddingTop: "4px",
+                paddingBottom: "4px",
+                paddingLeft: "16px",
+                paddingRight: "16px",
+                borderRadius: "6px",
+              }}
             >
               {Icon && <Icon className="w-5 h-5 text-[#737373]" />}
               <input
@@ -149,32 +156,46 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                 placeholder={field.placeholder}
                 className="flex-1 outline-none text-gray-800 placeholder:text-[#737373]"
                 style={{
+                  border: "none",
+                  paddingTop: "12px",
+                  paddingBottom: "12px",
                   fontFamily: "Manrope, sans-serif",
-                  fontSize: "16px",
+                  fontSize: "14px",
                   fontWeight: 400,
+                  backgroundColor: "#FAFAFA",
                 }}
               />
             </div>
 
             {showSuggestions && suggestions.length > 0 && (
               <div
-                className="absolute z-10 w-full mt-3 bg-white border-2 rounded-2xl shadow-xl overflow-hidden"
-                style={{ borderColor: "#D4D4D4" }}
+                className="absolute z-10 w-full bg-white border-2 rounded-2xl shadow-xl overflow-hidden"
+                style={{
+                  border: "1px solid #D4D4D4",
+                  paddingTop: "4px",
+                  paddingBottom: "4px",
+                  paddingLeft: "16px",
+                  paddingRight: "16px",
+                  borderRadius: "6px",
+                  borderColor: "#D4D4D4",
+                  marginTop: "8px",
+                }}
               >
                 {suggestions.map((suggestion, idx) => (
                   <div
                     key={idx}
                     onClick={() => selectSuggestion(field.name, suggestion)}
-                    className="px-5 py-4 hover:bg-gray-50 cursor-pointer flex items-center gap-3 border-b last:border-b-0 transition-colors"
+                    className="px-5 py-[8px] hover:bg-gray-50 cursor-pointer flex items-center gap-3 last:border-b-0 transition-colors"
                   >
-                    <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                      <MapPin className="w-5 h-5 text-gray-600" />
+                    <div className="w-10 h-10 bg-[#D4D4D4] rounded-[8px] px-[12px] py-[12px] flex items-center justify-center hover:bg-[#F5F5F5] transition-colors">
+                      <MapPin className="w-5 h-5 stroke-[#525252]" />
                     </div>
                     <span
                       className="text-gray-700 font-medium"
                       style={{
                         fontFamily: "Manrope, sans-serif",
                         fontSize: "16px",
+                        color: "#262626",
                       }}
                     >
                       {suggestion}
