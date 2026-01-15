@@ -349,18 +349,553 @@ const FormRenderer: React.FC<FormRendererProps> = ({
           </div>
         );
 
-      // [Keep the rest of your cases as they were...]
+      // ============================================
+      // PROPERTY TYPE & DEVELOPER PAGES - MULTISELECT FIELDS
+      // ============================================
       case "multiselect":
       case "multiselect-search": {
-        // ... rest of your existing code for multiselect
+        const options = field.filterOptions
+          ? field.filterOptions(field.options || [], formData)
+          : field.options || [];
+
+        const selectedValues: string[] = formData[field.name] || [];
+        const isSearchable = field.type === "multiselect-search";
+        const searchTerm = searchQuery[field.name] || "";
+
+        const filteredOptions =
+          isSearchable && searchTerm
+            ? options.filter((opt) =>
+                opt.label.toLowerCase().includes(searchTerm.toLowerCase())
+              )
+            : options;
+
+        return (
+          <div className="w-full space-y-6 max-w-4xl mx-auto">
+            {/* DEVELOPER SEARCH (MULTISELECT-SEARCH) */}
+            {isSearchable && (
+              <div
+                className="max-w-[448px] mx-auto bg-white border-2 rounded-2xl p-3"
+                style={{ borderColor: "#D4D4D4" }}
+              >
+                {/* SELECTED DEVELOPERS TAGS */}
+                {selectedValues.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-3 px-1">
+                    <div
+                      className="flex items-center gap-2 text-[#737373]"
+                      style={{
+                        fontFamily: "Manrope, sans-serif",
+                        fontSize: "14px",
+                        fontWeight: 600,
+                      }}
+                    >
+                      {/* <img
+                        src="/home.svg"
+                        alt="Developers"
+                        className="w-5 h-5"
+                      /> */}
+                      {/* <span>Developers</span> */}
+                    </div>
+                    {selectedValues.map((val) => {
+                      const opt = options.find((o) => o.value === val);
+                      return (
+                        <div
+                          key={val}
+                          className="px-3 py-1 bg-white border border-gray-800 rounded-lg text-sm font-medium flex items-center gap-2"
+                          style={{
+                            fontFamily: "Manrope, sans-serif",
+                            fontSize: "14px",
+                          }}
+                        >
+                          {opt?.label}
+                          <button
+                            onClick={() =>
+                              handleFieldChange(
+                                field.name,
+                                selectedValues.filter((v) => v !== val)
+                              )
+                            }
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* DEVELOPER SEARCH INPUT */}
+                <div className="relative mb-3">
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) =>
+                      setSearchQuery((prev) => ({
+                        ...prev,
+                        [field.name]: e.target.value,
+                      }))
+                    }
+                    placeholder={field.searchPlaceholder || "Search..."}
+                    className="w-full px-4 py-3 border-2 rounded-xl focus:border-gray-400 outline-none"
+                    style={{
+                      borderColor: "#D4D4D4",
+                      fontFamily: "Manrope, sans-serif",
+                      fontSize: "14px",
+                    }}
+                  />
+                </div>
+
+                {/* DEVELOPER OPTIONS LIST */}
+                <div className="space-y-0 max-h-[150px] overflow-y-auto">
+                  {filteredOptions.map((option) => {
+                    const isSelected = selectedValues.includes(option.value);
+                    return (
+                      <div
+                        key={option.value}
+                        onClick={() =>
+                          handleFieldChange(
+                            field.name,
+                            isSelected
+                              ? selectedValues.filter((v) => v !== option.value)
+                              : [...selectedValues, option.value]
+                          )
+                        }
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer rounded-lg"
+                      >
+                        {/* CHECKBOX FOR DEVELOPER SELECTION */}
+                        <div
+                          className={`w-6 h-6 border-2 rounded flex items-center justify-center ${
+                            isSelected
+                              ? "bg-black border-black"
+                              : "border-gray-300 bg-white"
+                          }`}
+                          style={{ borderRadius: "4px" }}
+                        >
+                          {isSelected && (
+                            <svg
+                              className="w-4 h-4 text-white"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          )}
+                        </div>
+
+                        {/* DEVELOPER NAME */}
+                        <span
+                          className="text-gray-800 font-medium"
+                          style={{
+                            fontFamily: "Manrope, sans-serif",
+                            fontSize: "16px",
+                          }}
+                        >
+                          {option.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* PROPERTY TYPE SELECTION (MULTISELECT - VISUAL) */}
+            {!isSearchable && (
+              <div
+                className="flex flex-wrap justify-center"
+                style={{
+                  gap: "24px",
+                  maxWidth: "calc(3 * 168px + 2 * 24px)", // Maximum width for 3 items
+                  margin: "0 auto", // Center the container
+                }}
+              >
+                {filteredOptions.map((option) => {
+                  const isSelected = selectedValues.includes(option.value);
+
+                  return (
+                    <button
+                      key={option.value}
+                      onClick={() =>
+                        handleFieldChange(
+                          field.name,
+                          isSelected
+                            ? selectedValues.filter((v) => v !== option.value)
+                            : [...selectedValues, option.value]
+                        )
+                      }
+                      className={`relative text-center transition-all bg-white ${
+                        isSelected ? "border-2 border-black" : "border-2"
+                      }`}
+                      style={{
+                        width: "168px",
+                        backgroundColor: "#FAFAFA",
+                        paddingTop: "12px",
+                        paddingBottom: "20px",
+                        paddingLeft: "16px",
+                        paddingRight: "16px",
+                        border: isSelected
+                          ? "1px solid #000000"
+                          : "1px solid #A3A3A3", // 1px border
+
+                        borderRadius: "16px",
+                      }}
+                    >
+                      <div className="flex flex-col items-center gap-3">
+                        {/* PROPERTY TYPE ICON */}
+                        {option.icon && (
+                          <div className="w-[165px] h-[120px] flex items-center justify-center">
+                            <img
+                              src={`/${
+                                option.value === "plot"
+                                  ? "Plot"
+                                  : option.value === "apartment"
+                                  ? "Apartment"
+                                  : option.value === "villa"
+                                  ? "Villa"
+                                  : option.value === "villament"
+                                  ? "Villament"
+                                  : option.value === "rowHouses"
+                                  ? "RowHouses"
+                                  : "Plot"
+                              }.svg`}
+                              alt={option.label}
+                              className="w-full h-full object-contain"
+                              onError={(e) => {
+                                e.currentTarget.style.display = "none";
+                              }}
+                            />
+                          </div>
+                        )}
+
+                        {/* PROPERTY TYPE LABEL */}
+                        <div
+                          className="font-semibold text-gray-800"
+                          style={{
+                            fontFamily: "Manrope, sans-serif",
+                            fontSize: "18px",
+                            fontWeight: 600,
+                            width: "168px",
+                            height: "36px",
+                          }}
+                        >
+                          {option.label}
+                        </div>
+
+                        {/* SELECTION CHECKBOX */}
+                        <Checkbox
+                          checked={isSelected}
+                          onChange={() =>
+                            handleFieldChange(
+                              field.name,
+                              isSelected
+                                ? selectedValues.filter(
+                                    (v) => v !== option.value
+                                  )
+                                : [...selectedValues, option.value]
+                            )
+                          }
+                          size="small"
+                          sx={{
+                            color: "#D1D5DB",
+                            "&.Mui-checked": {
+                              color: "#000000",
+                            },
+                            "& .MuiSvgIcon-root": {
+                              fontSize: 29,
+                            },
+                          }}
+                        />
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
       }
 
+      // ============================================
+      // POSSESSION BY & PROJECT TYPE PAGES - SINGLE SELECT FIELDS
+      // ============================================
       case "singleselect": {
-        // ... rest of your existing code for singleselect
+        const selectedValue = formData[field.name];
+
+        return (
+          <div className="space-y-6">
+            {/* PROJECT TYPE SELECTION (VISUAL CARDS) */}
+            {field.label === "Project Type" ? (
+              <div className="flex flex-wrap justify-center gap-6">
+                {field.options?.map((option) => {
+                  const isSelected = selectedValue === option.value;
+                  return (
+                    <button
+                      key={option.value}
+                      onClick={() =>
+                        handleFieldChange(field.name, option.value)
+                      }
+                      className={`relative text-center transition-all bg-white ${
+                        isSelected ? "border-2 border-black" : "border-2"
+                      }`}
+                      style={{
+                        width: "168px",
+                        paddingTop: "12px",
+                        paddingBottom: "20px",
+                        paddingLeft: "16px",
+                        paddingRight: "16px",
+                        borderColor: isSelected ? "#000000" : "#A3A3A3",
+                        borderRadius: "16px",
+                      }}
+                    >
+                      <div className="flex flex-col items-center gap-3">
+                        {/* PROJECT TYPE ICON */}
+                        <div className="w-full h-32 flex items-center justify-center">
+                          <img
+                            src={`/${
+                              option.value === "prelaunch"
+                                ? "PreLaunch"
+                                : option.value === "underconstruction"
+                                ? "UnderConstruction"
+                                : "ReadyToMove"
+                            }.svg`}
+                            alt={option.label}
+                            className="w-full h-full object-contain"
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                            }}
+                          />
+                        </div>
+
+                        {/* PROJECT TYPE LABEL */}
+                        <div
+                          className="font-semibold text-gray-800"
+                          style={{
+                            fontFamily: "Manrope, sans-serif",
+                            fontSize: "18px",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {option.label}
+                        </div>
+
+                        {/* SELECTION RADIO BUTTON */}
+                        <div
+                          className={`w-6 h-6 border-2 flex items-center justify-center ${
+                            isSelected
+                              ? "bg-black border-black"
+                              : "border-gray-400 bg-white"
+                          }`}
+                          style={{ borderRadius: "4px" }}
+                        >
+                          {isSelected && (
+                            <svg
+                              className="w-4 h-4 text-white"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              /* POSSESSION BY SELECTION (BUTTONS) */
+              <div className="flex flex-wrap justify-center gap-6">
+                {field.options?.map((option) => {
+                  const isSelected = selectedValue === option.value;
+                  return (
+                    <button
+                      key={option.value}
+                      onClick={() =>
+                        handleFieldChange(field.name, option.value)
+                      }
+                      className={`font-semibold transition-all ${
+                        isSelected
+                          ? "border-2 border-black bg-white"
+                          : "border-2 bg-white"
+                      }`}
+                      style={{
+                        width: "173px",
+                        height: "48px",
+                        paddingTop: "12px",
+                        paddingBottom: "12px",
+                        paddingLeft: "24px",
+                        paddingRight: "24px",
+                        borderColor: isSelected ? "#000000" : "#A3A3A3",
+                        borderRadius: "16px",
+                        fontFamily: "Manrope, sans-serif",
+                        fontSize: "16px",
+                        fontWeight: 600,
+                        color: "#404040",
+                      }}
+                    >
+                      {option.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
       }
 
+      // ============================================
+      // BUDGET & PLOT SIZE PAGES - RANGE SLIDER FIELDS
+      // ============================================
       case "range": {
-        // ... rest of your existing code for range
+        const rangeValue = formData[field.name] || {
+          min: field.minValue,
+          max: field.maxValue,
+        };
+
+        const handleRangeChange = (value: any) => {
+          handleFieldChange(field.name, {
+            min: value[0],
+            max: value[1],
+          });
+        };
+
+        const handleMaxChange = (max: number) => {
+          handleFieldChange(field.name, {
+            ...rangeValue,
+            max: max || rangeValue.min,
+          });
+        };
+
+        const handleMinChange = (min: number) => {
+          handleFieldChange(field.name, {
+            ...rangeValue,
+            min: min || field.minValue || 0,
+          });
+        };
+
+        const formatFn =
+          field.formatValue || ((v: number) => `${v.toLocaleString()}`);
+
+        return (
+          <div className="max-w-2xl mx-auto space-y-8">
+            {/* RANGE SLIDER */}
+            <div className="px-4">
+              <RangeSlider
+                range
+                min={field.minValue}
+                max={field.maxValue}
+                value={[rangeValue.min, rangeValue.max]}
+                onChange={(value: any) => handleRangeChange(value)}
+                className={cn("[&>.rc-slider-step]:hidden")}
+              />
+            </div>
+
+            {/* MIN AND MAX VALUE INPUTS */}
+            <div className="flex items-center justify-center gap-6">
+              {/* MIN VALUE INPUT */}
+              <div className="flex-1 max-w-xs">
+                <div
+                  className="overflow-hidden border-2 rounded-2xl bg-white shadow-sm"
+                  style={{ borderColor: "#D4D4D4" }}
+                >
+                  <div
+                    className="px-5 pt-3 text-sm text-gray-500"
+                    style={{
+                      fontFamily: "Manrope, sans-serif",
+                      fontSize: "14px",
+                    }}
+                  >
+                    From
+                  </div>
+                  <input
+                    type="number"
+                    value={rangeValue.min}
+                    onChange={(e) => handleMinChange(parseInt(e.target.value))}
+                    className="w-full border-none bg-white px-5 pb-3 text-2xl font-bold text-gray-800 outline-none focus:shadow-none focus:ring-0"
+                    style={{
+                      fontFamily: "Manrope, sans-serif",
+                      fontSize: "24px",
+                      fontWeight: 700,
+                    }}
+                    min={field.minValue}
+                    max={rangeValue.max}
+                    readOnly
+                  />
+                  <div
+                    className="px-5 pb-3 text-xs text-gray-400"
+                    style={{
+                      fontFamily: "Manrope, sans-serif",
+                      fontSize: "12px",
+                    }}
+                  >
+                    {/* Conditional display for min value */}
+                    {field.name === "plotSize"
+                      ? `Sqft`
+                      : field.name === "budget"
+                      ? rangeValue.min >= 10000000
+                        ? `₹${(rangeValue.min / 10000000).toFixed(2)} Cr`
+                        : `₹${(rangeValue.min / 100000).toFixed(2)} Lac`
+                      : `₹${(rangeValue.min / 100000).toFixed(2)} Lac`}
+                  </div>
+                </div>
+              </div>
+
+              {/* MAX VALUE INPUT */}
+              <div className="flex-1 max-w-xs">
+                <div
+                  className="overflow-hidden border-2 rounded-2xl bg-white shadow-sm"
+                  style={{ borderColor: "#D4D4D4" }}
+                >
+                  <div
+                    className="px-5 pt-3 text-sm text-gray-500"
+                    style={{
+                      fontFamily: "Manrope, sans-serif",
+                      fontSize: "14px",
+                    }}
+                  >
+                    To
+                  </div>
+                  <input
+                    type="number"
+                    value={rangeValue.max}
+                    onChange={(e) => handleMaxChange(parseInt(e.target.value))}
+                    className="w-full border-none bg-white px-5 pb-3 text-2xl font-bold text-gray-800 outline-none focus:shadow-none focus:ring-0"
+                    style={{
+                      fontFamily: "Manrope, sans-serif",
+                      fontSize: "24px",
+                      fontWeight: 700,
+                    }}
+                    min={rangeValue.min}
+                    readOnly
+                  />
+                  <div
+                    className="px-5 pb-3 text-xs text-gray-400"
+                    style={{
+                      fontFamily: "Manrope, sans-serif",
+                      fontSize: "12px",
+                    }}
+                  >
+                    {/* Conditional display for max value */}
+                    {field.name === "plotSize"
+                      ? `Sqft`
+                      : field.name === "budget"
+                      ? rangeValue.max >= 10000000
+                        ? `₹${(rangeValue.max / 10000000).toFixed(2)} Cr`
+                        : `₹${(rangeValue.max / 100000).toFixed(2)} Lac`
+                      : `₹${(rangeValue.max / 100000).toFixed(2)} Lac`}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
       }
 
       default:
