@@ -763,7 +763,14 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                       fontSize: "12px",
                     }}
                   >
-                    ₹{(rangeValue.min / 100000).toFixed(2)} Lac
+                    {/* Conditional display for min value */}
+                    {field.name === "plotSize"
+                      ? `Sqft`
+                      : field.name === "budget"
+                      ? rangeValue.min >= 10000000
+                        ? `₹${(rangeValue.min / 10000000).toFixed(2)} Cr`
+                        : `₹${(rangeValue.min / 100000).toFixed(2)} Lac`
+                      : `₹${(rangeValue.min / 100000).toFixed(2)} Lac`}
                   </div>
                 </div>
               </div>
@@ -803,7 +810,14 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                       fontSize: "12px",
                     }}
                   >
-                    ₹{(rangeValue.max / 10000000).toFixed(1)} Crs
+                    {/* Conditional display for max value */}
+                    {field.name === "plotSize"
+                      ? `Sqft`
+                      : field.name === "budget"
+                      ? rangeValue.max >= 10000000
+                        ? `₹${(rangeValue.max / 10000000).toFixed(2)} Cr`
+                        : `₹${(rangeValue.max / 100000).toFixed(2)} Lac`
+                      : `₹${(rangeValue.max / 100000).toFixed(2)} Lac`}
                   </div>
                 </div>
               </div>
