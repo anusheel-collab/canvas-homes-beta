@@ -1,38 +1,11 @@
 import React from "react";
-import { tv, type VariantProps } from "tailwind-variants";
 import { cn } from "./utils/cn";
 import Slider from "rc-slider";
 import type { SliderProps } from "rc-slider";
 import "rc-slider/assets/index.css";
 
-const rangeSlider = tv({
-  slots: {
-    container:
-      "[&>.rc-slider-rail]:!bg-gray-200 [&>.rc-slider-handle]:!opacity-100 [&>.rc-slider-handle-dragging]:!shadow-none [&>.rc-slider-handle-dragging]:!ring-4 [&>.rc-slider-track]:!bg-black [&>.rc-slider-handle]:!border-black [&>.rc-slider-handle]:hover:!border-black [&>.rc-slider-handle-dragging]:!border-black [&>.rc-slider-handle-dragging]:!ring-black/20 [&>.rc-slider-step>.rc-slider-dot-active]:!border-black",
-  },
-  variants: {
-    size: {
-      sm: {
-        container:
-          "[&>.rc-slider-rail]:!h-0.5 [&>.rc-slider-track]:!h-0.5 [&>.rc-slider-handle]:!h-3 [&>.rc-slider-handle]:!w-3 [&>.rc-slider-handle]:!border-[3px]",
-      },
-      md: {
-        container:
-          "[&>.rc-slider-rail]:!h-1 [&>.rc-slider-track]:!h-1 [&>.rc-slider-handle]:!h-4 [&>.rc-slider-handle]:!w-4 [&>.rc-slider-handle]:!border-4 [&>.rc-slider-handle]:!-mt-1.5",
-      },
-      lg: {
-        container:
-          "[&>.rc-slider-rail]:!h-2 [&>.rc-slider-track]:!h-2 [&>.rc-slider-handle]:!h-5 [&>.rc-slider-handle]:!w-5 [&>.rc-slider-handle]:!border-[5px] [&>.rc-slider-handle]:!-mt-1.5",
-      },
-    },
-  },
-  defaultVariants: {
-    size: "md",
-  },
-});
-
 export interface RangeSliderProps extends SliderProps {
-  size?: VariantProps<typeof rangeSlider>["size"];
+  size?: "sm" | "md" | "lg";
 }
 
 export default function RangeSlider({
@@ -40,6 +13,53 @@ export default function RangeSlider({
   className,
   ...props
 }: RangeSliderProps) {
-  const { container: containerClass } = rangeSlider({ size });
-  return <Slider className={cn(containerClass(), className)} {...props} />;
+  return (
+    <div className="w-[480px] relative">
+      <Slider
+        className={cn(
+          className,
+          "[&>.rc-slider-rail]:!bg-[#E5E5E5]",
+          "[&>.rc-slider-track]:!bg-[#171717]",
+          "[&>.rc-slider-rail]:!h-2",
+          "[&>.rc-slider-track]:!h-2",
+          // Hide default handle visuals
+          "[&>.rc-slider-handle]:!border-0",
+          "[&>.rc-slider-handle]:!bg-transparent",
+          "[&>.rc-slider-handle]:!shadow-none"
+        )}
+        handleStyle={[
+          {
+            width: "40.5px",
+            height: "29px",
+            marginTop: "-14.5px",
+            border: "none",
+            background: "url('/rangehead.svg') no-repeat center",
+            backgroundSize: "contain",
+            cursor: "pointer",
+            opacity: 1,
+            // Remove default handle border/shadow
+            boxShadow: "none",
+            borderColor: "transparent",
+          },
+          {
+            width: "40.5px",
+            height: "29px",
+            marginTop: "-14.5px",
+            border: "none",
+            background: "url('/rangehead.svg') no-repeat center",
+            backgroundSize: "contain",
+            cursor: "pointer",
+            opacity: 1,
+            // Remove default handle border/shadow
+            boxShadow: "none",
+            borderColor: "transparent",
+          },
+        ]}
+        activeDotStyle={{
+          display: "none", // Hide active dot
+        }}
+        {...props}
+      />
+    </div>
+  );
 }
