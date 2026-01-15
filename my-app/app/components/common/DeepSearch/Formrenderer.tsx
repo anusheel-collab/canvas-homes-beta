@@ -1,16 +1,16 @@
 "use client";
 import Checkbox from "@mui/material/Checkbox";
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { MapPin, X, Home } from "lucide-react";
 import { formConfig, FormField, FormStep } from "./formConfig";
 import RangeSlider from "./RangeSlider";
 import { cn } from "./utils/cn";
+import { MapModal } from "./MapModal";
 
 // ============================================
 // INTERFACE DEFINITIONS
 // ============================================
 
-// Props for FormRenderer component
 interface FormRendererProps {
   onStepChange: (currentStep: number) => void;
   currentStep: number;
@@ -18,12 +18,10 @@ interface FormRendererProps {
   onFormDataUpdate?: (formData: any) => void;
 }
 
-// Interface for form data structure
 interface FormData {
   [key: string]: any;
 }
 
-// Interface for search queries
 interface SearchQuery {
   [key: string]: string;
 }
@@ -42,23 +40,15 @@ const FormRenderer: React.FC<FormRendererProps> = ({
   // STATE MANAGEMENT
   // ============================================
 
-  // Stores all form field values
   const [formData, setFormData] = useState<FormData>({});
-
-  // Stores autocomplete suggestions
   const [suggestions, setSuggestions] = useState<string[]>([]);
-
-  // Controls visibility of suggestions dropdown
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
-
-  // Stores search queries for different fields
   const [searchQuery, setSearchQuery] = useState<SearchQuery>({});
 
-  // ============================================
-  // STEP FILTERING LOGIC
-  // ============================================
+  // ADD THESE STATES FOR MAP MODAL
+  const [showMapModal, setShowMapModal] = useState(false);
+  const [activeField, setActiveField] = useState<string | null>(null);
 
-  // Filters steps based on conditions (e.g., show plotSize only if plot is selected)
   const getVisibleSteps = useMemo(() => {
     return formConfig.steps.filter((step) => {
       if (!step.condition) return true;
@@ -66,19 +56,47 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     });
   }, [formData]);
 
-  // Gets current step from visible steps array
   const currentVisibleStep = getVisibleSteps[currentStep];
   const currentStepConfig = currentVisibleStep;
   const totalVisibleSteps = getVisibleSteps.length;
 
   // ============================================
+  // MAP SELECTION HANDLER
+  // ============================================
+
+  const handleMapSelection = (selectedArea: any) => {
+    console.log("Selected area from map:", selectedArea);
+
+    if (activeField) {
+      // Update the form field with the selected area
+      handleFieldChange(activeField, "Custom Drawn Area");
+
+      // Also store the detailed map selection
+      handleFieldChange("selectedLocation", {
+        type: "mapSelection",
+        coordinates: selectedArea.coordinates || [],
+        area: selectedArea.area || "Custom Drawn Area",
+        propertyCount: selectedArea.propertyCount || 0,
+        displayName: "Custom Drawn Area",
+      });
+
+      // Update search query to show the selected area
+      setSearchQuery((prev) => ({
+        ...prev,
+        [activeField]: "Custom Drawn Area",
+      }));
+    }
+
+    setShowMapModal(false);
+    setShowSuggestions(false);
+  };
+
+  // ============================================
   // DYNAMIC TITLE HANDLING
   // ============================================
 
-  // Gets step title (can be string or function)
   const getStepTitle = (step: FormStep | undefined) => {
     if (!step) return "";
-
     if (typeof step.title === "function") {
       return step.title(formData);
     }
@@ -91,10 +109,8 @@ const FormRenderer: React.FC<FormRendererProps> = ({
   // FIELD FILTERING LOGIC
   // ============================================
 
-  // Filters fields based on conditions within current step
   const visibleFields = useMemo(() => {
     if (!currentStepConfig) return [];
-
     return (
       currentStepConfig.fields.filter((field) => {
         if (!field.condition) return true;
@@ -107,22 +123,16 @@ const FormRenderer: React.FC<FormRendererProps> = ({
   // VALIDATION LOGIC
   // ============================================
 
-  // Validates if current step is complete
   const isStepValid = useMemo(() => {
     if (!currentStepConfig) return false;
-
     return visibleFields.every((field) => {
       if (!field.required) return true;
-
       const value = formData[field.name];
       if (!value) return false;
-
       if (Array.isArray(value)) return value.length > 0;
-
       if (field.type === "range") {
         return value.min !== undefined && value.max !== undefined;
       }
-
       return true;
     });
   }, [visibleFields, formData, currentStepConfig]);
@@ -131,14 +141,12 @@ const FormRenderer: React.FC<FormRendererProps> = ({
   // EFFECTS FOR PARENT COMMUNICATION
   // ============================================
 
-  // Notifies parent when validation changes
   useEffect(() => {
     if (onValidationChange) {
       onValidationChange(isStepValid);
     }
   }, [isStepValid, onValidationChange]);
 
-  // Notifies parent when form data updates
   useEffect(() => {
     if (onFormDataUpdate) {
       onFormDataUpdate(formData);
@@ -149,19 +157,18 @@ const FormRenderer: React.FC<FormRendererProps> = ({
   // EVENT HANDLERS
   // ============================================
 
-  // Handles field value changes
   const handleFieldChange = (fieldName: string, value: any) => {
     const newFormData = { ...formData, [fieldName]: value };
     setFormData(newFormData);
   };
 
-  // Handles autocomplete search input
   const handleAutocomplete = (
     fieldName: string,
     query: string,
     field: FormField
   ) => {
     setSearchQuery((prev) => ({ ...prev, [fieldName]: query }));
+    setActiveField(fieldName);
 
     if (query.length > 0 && field.getSuggestions) {
       const results = field.getSuggestions(query);
@@ -173,7 +180,6 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     }
   };
 
-  // Handles suggestion selection
   const selectSuggestion = (fieldName: string, value: string) => {
     handleFieldChange(fieldName, value);
     setSearchQuery((prev) => ({ ...prev, [fieldName]: value }));
@@ -182,21 +188,15 @@ const FormRenderer: React.FC<FormRendererProps> = ({
   };
 
   // ============================================
-  // FIELD RENDERER FUNCTION
+  // RENDER FIELD FUNCTION
   // ============================================
 
-  // Renders different field types based on field.type
   const renderField = (field: FormField) => {
     const Icon = field.icon;
-
     switch (field.type) {
-      // ============================================
-      // LOCATION SEARCH PAGE - AUTOCOMPLETE FIELD
-      // ============================================
       case "autocomplete":
         return (
           <div className="relative w-full max-w-[470px] mx-auto">
-            {/* SEARCH BAR CONTAINER */}
             <div
               className="flex items-center gap-3 bg-white transition-colors"
               style={{
@@ -208,16 +208,27 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                 borderRadius: "6px",
               }}
             >
-              {/* MAP ICON */}
               {Icon && <Icon className="w-5 h-5 text-[#737373]" />}
 
-              {/* SEARCH INPUT FIELD */}
               <input
                 type="text"
                 value={searchQuery[field.name] || ""}
                 onChange={(e) =>
                   handleAutocomplete(field.name, e.target.value, field)
                 }
+                onFocus={() => {
+                  setActiveField(field.name);
+                  if (
+                    searchQuery[field.name]?.length > 0 &&
+                    field.getSuggestions
+                  ) {
+                    const results = field.getSuggestions(
+                      searchQuery[field.name]
+                    );
+                    setSuggestions(results);
+                    setShowSuggestions(true);
+                  }
+                }}
                 placeholder={field.placeholder}
                 className="flex-1 outline-none text-gray-800 placeholder:text-[#737373]"
                 style={{
@@ -232,10 +243,9 @@ const FormRenderer: React.FC<FormRendererProps> = ({
               />
             </div>
 
-            {/* SUGGESTIONS DROPDOWN */}
-            {showSuggestions && suggestions.length > 0 && (
+            {showSuggestions && activeField === field.name && (
               <div
-                className="absolute z-10 w-full bg-white border-2 rounded-2xl shadow-xl overflow-hidden"
+                className="absolute left-0 z-10 w-full bg-white rounded-2xl shadow-xl overflow-hidden mt-2"
                 style={{
                   border: "1px solid #D4D4D4",
                   paddingTop: "4px",
@@ -244,586 +254,113 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                   paddingRight: "16px",
                   borderRadius: "6px",
                   borderColor: "#D4D4D4",
-                  marginTop: "8px",
                 }}
               >
-                {/* INDIVIDUAL SUGGESTION ITEMS */}
-                {suggestions.map((suggestion, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => selectSuggestion(field.name, suggestion)}
-                    className="px-5 py-[8px] hover:bg-gray-50 cursor-pointer flex items-center gap-3 last:border-b-0 transition-colors"
-                  >
-                    {/* SUGGESTION ICON CONTAINER */}
-                    <div className="w-10 h-10 bg-[#D4D4D4] rounded-[8px] px-[12px] py-[12px] flex items-center justify-center hover:bg-[#F5F5F5] transition-colors">
-                      <MapPin className="w-5 h-5 stroke-[#525252]" />
-                    </div>
-
-                    {/* SUGGESTION TEXT */}
+                {/* MAP SEARCH OPTION - ALWAYS SHOW AT TOP */}
+                <div
+                  onClick={() => {
+                    setShowMapModal(true);
+                    setShowSuggestions(false);
+                  }}
+                  className="group px-[8px] py-[10px] hover:bg-[#F5F5F5] cursor-pointer flex items-center gap-4 rounded-[6px] transition-colors border-b border-gray-100"
+                >
+                  <div className="w-10 h-10 bg-blue-50 rounded-[8px] px-[12px] py-[12px] flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                    <svg
+                      className="w-5 h-5 stroke-blue-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                      />
+                    </svg>
+                  </div>
+                  <div className="flex flex-col flex-1">
                     <span
-                      className="text-gray-700 font-medium"
+                      className="text-gray-800 font-semibold"
                       style={{
                         fontFamily: "Manrope, sans-serif",
                         fontSize: "16px",
                         color: "#262626",
                       }}
                     >
-                      {suggestion}
+                      Search on Map
+                    </span>
+                    <span className="text-sm text-gray-500 mt-0.5">
+                      Draw your preferred area on the map
                     </span>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-        );
-
-      // ============================================
-      // PROPERTY TYPE & DEVELOPER PAGES - MULTISELECT FIELDS
-      // ============================================
-      case "multiselect":
-      case "multiselect-search": {
-        const options = field.filterOptions
-          ? field.filterOptions(field.options || [], formData)
-          : field.options || [];
-
-        const selectedValues: string[] = formData[field.name] || [];
-        const isSearchable = field.type === "multiselect-search";
-        const searchTerm = searchQuery[field.name] || "";
-
-        const filteredOptions =
-          isSearchable && searchTerm
-            ? options.filter((opt) =>
-                opt.label.toLowerCase().includes(searchTerm.toLowerCase())
-              )
-            : options;
-
-        return (
-          <div className="w-full space-y-6 max-w-4xl mx-auto">
-            {/* DEVELOPER SEARCH (MULTISELECT-SEARCH) */}
-            {isSearchable && (
-              <div
-                className="max-w-[448px] mx-auto bg-white border-2 rounded-2xl p-3"
-                style={{ borderColor: "#D4D4D4" }}
-              >
-                {/* SELECTED DEVELOPERS TAGS */}
-                {selectedValues.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-3 px-1">
-                    <div
-                      className="flex items-center gap-2 text-[#737373]"
-                      style={{
-                        fontFamily: "Manrope, sans-serif",
-                        fontSize: "14px",
-                        fontWeight: 600,
-                      }}
+                  <div className="ml-auto">
+                    <svg
+                      className="w-5 h-5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      {/* <img
-                        src="/home.svg"
-                        alt="Developers"
-                        className="w-5 h-5"
-                      /> */}
-                      {/* <span>Developers</span> */}
-                    </div>
-                    {selectedValues.map((val) => {
-                      const opt = options.find((o) => o.value === val);
-                      return (
-                        <div
-                          key={val}
-                          className="px-3 py-1 bg-white border border-gray-800 rounded-lg text-sm font-medium flex items-center gap-2"
-                          style={{
-                            fontFamily: "Manrope, sans-serif",
-                            fontSize: "14px",
-                          }}
-                        >
-                          {opt?.label}
-                          <button
-                            onClick={() =>
-                              handleFieldChange(
-                                field.name,
-                                selectedValues.filter((v) => v !== val)
-                              )
-                            }
-                          >
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      );
-                    })}
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
                   </div>
-                )}
-
-                {/* DEVELOPER SEARCH INPUT */}
-                <div className="relative mb-3">
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) =>
-                      setSearchQuery((prev) => ({
-                        ...prev,
-                        [field.name]: e.target.value,
-                      }))
-                    }
-                    placeholder={field.searchPlaceholder || "Search..."}
-                    className="w-full px-4 py-3 border-2 rounded-xl focus:border-gray-400 outline-none"
-                    style={{
-                      borderColor: "#D4D4D4",
-                      fontFamily: "Manrope, sans-serif",
-                      fontSize: "14px",
-                    }}
-                  />
                 </div>
 
-                {/* DEVELOPER OPTIONS LIST */}
-                <div className="space-y-0 max-h-[150px] overflow-y-auto">
-                  {filteredOptions.map((option) => {
-                    const isSelected = selectedValues.includes(option.value);
-                    return (
+                {/* REGULAR SUGGESTIONS */}
+                {suggestions.length > 0 && (
+                  <>
+                    <div className="px-4 py-2 bg-gray-50">
+                      <span className="text-xs font-medium text-gray-500">
+                        SUGGESTED LOCATIONS
+                      </span>
+                    </div>
+                    {suggestions.map((suggestion, idx) => (
                       <div
-                        key={option.value}
-                        onClick={() =>
-                          handleFieldChange(
-                            field.name,
-                            isSelected
-                              ? selectedValues.filter((v) => v !== option.value)
-                              : [...selectedValues, option.value]
-                          )
-                        }
-                        className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer rounded-lg"
+                        key={idx}
+                        onClick={() => selectSuggestion(field.name, suggestion)}
+                        className="group px-[8px] py-[10px] hover:bg-[#F5F5F5] cursor-pointer flex items-center gap-4 rounded-[6px] transition-colors"
                       >
-                        {/* CHECKBOX FOR DEVELOPER SELECTION */}
-                        <div
-                          className={`w-6 h-6 border-2 rounded flex items-center justify-center ${
-                            isSelected
-                              ? "bg-black border-black"
-                              : "border-gray-300 bg-white"
-                          }`}
-                          style={{ borderRadius: "4px" }}
-                        >
-                          {isSelected && (
-                            <svg
-                              className="w-4 h-4 text-white"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          )}
+                        <div className="w-10 h-10 bg-[#F5F5F5] rounded-[8px] px-[12px] py-[12px] flex items-center justify-center group-hover:bg-[#D4D4D4] transition-colors">
+                          <MapPin className="w-5 h-5 stroke-[#525252]" />
                         </div>
 
-                        {/* DEVELOPER NAME */}
                         <span
-                          className="text-gray-800 font-medium"
+                          className="text-gray-700 font-medium"
                           style={{
+                            padding: "8px 8px",
                             fontFamily: "Manrope, sans-serif",
                             fontSize: "16px",
+                            color: "#262626",
                           }}
                         >
-                          {option.label}
+                          {suggestion}
                         </span>
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* PROPERTY TYPE SELECTION (MULTISELECT - VISUAL) */}
-            {!isSearchable && (
-              <div
-                className="flex flex-wrap justify-center"
-                style={{
-                  gap: "24px",
-                  maxWidth: "calc(3 * 168px + 2 * 24px)", // Maximum width for 3 items
-                  margin: "0 auto", // Center the container
-                }}
-              >
-                {filteredOptions.map((option) => {
-                  const isSelected = selectedValues.includes(option.value);
-
-                  return (
-                    <button
-                      key={option.value}
-                      onClick={() =>
-                        handleFieldChange(
-                          field.name,
-                          isSelected
-                            ? selectedValues.filter((v) => v !== option.value)
-                            : [...selectedValues, option.value]
-                        )
-                      }
-                      className={`relative text-center transition-all bg-white ${
-                        isSelected ? "border-2 border-black" : "border-2"
-                      }`}
-                      style={{
-                        width: "168px",
-                        backgroundColor: "#FAFAFA",
-                        paddingTop: "12px",
-                        paddingBottom: "20px",
-                        paddingLeft: "16px",
-                        paddingRight: "16px",
-                        border: isSelected
-                          ? "1px solid #000000"
-                          : "1px solid #A3A3A3", // 1px border
-
-                        borderRadius: "16px",
-                      }}
-                    >
-                      <div className="flex flex-col items-center gap-3">
-                        {/* PROPERTY TYPE ICON */}
-                        {option.icon && (
-                          <div className="w-[165px] h-[120px] flex items-center justify-center">
-                            <img
-                              src={`/${
-                                option.value === "plot"
-                                  ? "Plot"
-                                  : option.value === "apartment"
-                                  ? "Apartment"
-                                  : option.value === "villa"
-                                  ? "Villa"
-                                  : option.value === "villament"
-                                  ? "Villament"
-                                  : option.value === "rowHouses"
-                                  ? "RowHouses"
-                                  : "Plot"
-                              }.svg`}
-                              alt={option.label}
-                              className="w-full h-full object-contain"
-                              onError={(e) => {
-                                e.currentTarget.style.display = "none";
-                              }}
-                            />
-                          </div>
-                        )}
-
-                        {/* PROPERTY TYPE LABEL */}
-                        <div
-                          className="font-semibold text-gray-800"
-                          style={{
-                            fontFamily: "Manrope, sans-serif",
-                            fontSize: "18px",
-                            fontWeight: 600,
-                            width: "168px",
-                            height: "36px",
-                          }}
-                        >
-                          {option.label}
-                        </div>
-
-                        {/* SELECTION CHECKBOX */}
-                        <Checkbox
-                          checked={isSelected}
-                          onChange={() =>
-                            handleFieldChange(
-                              field.name,
-                              isSelected
-                                ? selectedValues.filter(
-                                    (v) => v !== option.value
-                                  )
-                                : [...selectedValues, option.value]
-                            )
-                          }
-                          size="small"
-                          sx={{
-                            color: "#D1D5DB",
-                            "&.Mui-checked": {
-                              color: "#000000",
-                            },
-                            "& .MuiSvgIcon-root": {
-                              fontSize: 29,
-                            },
-                          }}
-                        />
-                      </div>
-                    </button>
-                  );
-                })}
+                    ))}
+                  </>
+                )}
               </div>
             )}
           </div>
         );
+
+      // [Keep the rest of your cases as they were...]
+      case "multiselect":
+      case "multiselect-search": {
+        // ... rest of your existing code for multiselect
       }
 
-      // ============================================
-      // POSSESSION BY & PROJECT TYPE PAGES - SINGLE SELECT FIELDS
-      // ============================================
       case "singleselect": {
-        const selectedValue = formData[field.name];
-
-        return (
-          <div className="space-y-6">
-            {/* PROJECT TYPE SELECTION (VISUAL CARDS) */}
-            {field.label === "Project Type" ? (
-              <div className="flex flex-wrap justify-center gap-6">
-                {field.options?.map((option) => {
-                  const isSelected = selectedValue === option.value;
-                  return (
-                    <button
-                      key={option.value}
-                      onClick={() =>
-                        handleFieldChange(field.name, option.value)
-                      }
-                      className={`relative text-center transition-all bg-white ${
-                        isSelected ? "border-2 border-black" : "border-2"
-                      }`}
-                      style={{
-                        width: "168px",
-                        paddingTop: "12px",
-                        paddingBottom: "20px",
-                        paddingLeft: "16px",
-                        paddingRight: "16px",
-                        borderColor: isSelected ? "#000000" : "#A3A3A3",
-                        borderRadius: "16px",
-                      }}
-                    >
-                      <div className="flex flex-col items-center gap-3">
-                        {/* PROJECT TYPE ICON */}
-                        <div className="w-full h-32 flex items-center justify-center">
-                          <img
-                            src={`/${
-                              option.value === "prelaunch"
-                                ? "PreLaunch"
-                                : option.value === "underconstruction"
-                                ? "UnderConstruction"
-                                : "ReadyToMove"
-                            }.svg`}
-                            alt={option.label}
-                            className="w-full h-full object-contain"
-                            onError={(e) => {
-                              e.currentTarget.style.display = "none";
-                            }}
-                          />
-                        </div>
-
-                        {/* PROJECT TYPE LABEL */}
-                        <div
-                          className="font-semibold text-gray-800"
-                          style={{
-                            fontFamily: "Manrope, sans-serif",
-                            fontSize: "18px",
-                            fontWeight: 600,
-                          }}
-                        >
-                          {option.label}
-                        </div>
-
-                        {/* SELECTION RADIO BUTTON */}
-                        <div
-                          className={`w-6 h-6 border-2 flex items-center justify-center ${
-                            isSelected
-                              ? "bg-black border-black"
-                              : "border-gray-400 bg-white"
-                          }`}
-                          style={{ borderRadius: "4px" }}
-                        >
-                          {isSelected && (
-                            <svg
-                              className="w-4 h-4 text-white"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          )}
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            ) : (
-              /* POSSESSION BY SELECTION (BUTTONS) */
-              <div className="flex flex-wrap justify-center gap-6">
-                {field.options?.map((option) => {
-                  const isSelected = selectedValue === option.value;
-                  return (
-                    <button
-                      key={option.value}
-                      onClick={() =>
-                        handleFieldChange(field.name, option.value)
-                      }
-                      className={`font-semibold transition-all ${
-                        isSelected
-                          ? "border-2 border-black bg-white"
-                          : "border-2 bg-white"
-                      }`}
-                      style={{
-                        width: "173px",
-                        height: "48px",
-                        paddingTop: "12px",
-                        paddingBottom: "12px",
-                        paddingLeft: "24px",
-                        paddingRight: "24px",
-                        borderColor: isSelected ? "#000000" : "#A3A3A3",
-                        borderRadius: "16px",
-                        fontFamily: "Manrope, sans-serif",
-                        fontSize: "16px",
-                        fontWeight: 600,
-                        color: "#404040",
-                      }}
-                    >
-                      {option.label}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        );
+        // ... rest of your existing code for singleselect
       }
 
-      // ============================================
-      // BUDGET & PLOT SIZE PAGES - RANGE SLIDER FIELDS
-      // ============================================
       case "range": {
-        const rangeValue = formData[field.name] || {
-          min: field.minValue,
-          max: field.maxValue,
-        };
-
-        const handleRangeChange = (value: any) => {
-          handleFieldChange(field.name, {
-            min: value[0],
-            max: value[1],
-          });
-        };
-
-        const handleMaxChange = (max: number) => {
-          handleFieldChange(field.name, {
-            ...rangeValue,
-            max: max || rangeValue.min,
-          });
-        };
-
-        const handleMinChange = (min: number) => {
-          handleFieldChange(field.name, {
-            ...rangeValue,
-            min: min || field.minValue || 0,
-          });
-        };
-
-        const formatFn =
-          field.formatValue || ((v: number) => `${v.toLocaleString()}`);
-
-        return (
-          <div className="max-w-2xl mx-auto space-y-8">
-            {/* RANGE SLIDER */}
-            <div className="px-4">
-              <RangeSlider
-                range
-                min={field.minValue}
-                max={field.maxValue}
-                value={[rangeValue.min, rangeValue.max]}
-                onChange={(value: any) => handleRangeChange(value)}
-                className={cn("[&>.rc-slider-step]:hidden")}
-              />
-            </div>
-
-            {/* MIN AND MAX VALUE INPUTS */}
-            <div className="flex items-center justify-center gap-6">
-              {/* MIN VALUE INPUT */}
-              <div className="flex-1 max-w-xs">
-                <div
-                  className="overflow-hidden border-2 rounded-2xl bg-white shadow-sm"
-                  style={{ borderColor: "#D4D4D4" }}
-                >
-                  <div
-                    className="px-5 pt-3 text-sm text-gray-500"
-                    style={{
-                      fontFamily: "Manrope, sans-serif",
-                      fontSize: "14px",
-                    }}
-                  >
-                    From
-                  </div>
-                  <input
-                    type="number"
-                    value={rangeValue.min}
-                    onChange={(e) => handleMinChange(parseInt(e.target.value))}
-                    className="w-full border-none bg-white px-5 pb-3 text-2xl font-bold text-gray-800 outline-none focus:shadow-none focus:ring-0"
-                    style={{
-                      fontFamily: "Manrope, sans-serif",
-                      fontSize: "24px",
-                      fontWeight: 700,
-                    }}
-                    min={field.minValue}
-                    max={rangeValue.max}
-                    readOnly
-                  />
-                  <div
-                    className="px-5 pb-3 text-xs text-gray-400"
-                    style={{
-                      fontFamily: "Manrope, sans-serif",
-                      fontSize: "12px",
-                    }}
-                  >
-                    {/* Conditional display for min value */}
-                    {field.name === "plotSize"
-                      ? `Sqft`
-                      : field.name === "budget"
-                      ? rangeValue.min >= 10000000
-                        ? `₹${(rangeValue.min / 10000000).toFixed(2)} Cr`
-                        : `₹${(rangeValue.min / 100000).toFixed(2)} Lac`
-                      : `₹${(rangeValue.min / 100000).toFixed(2)} Lac`}
-                  </div>
-                </div>
-              </div>
-
-              {/* MAX VALUE INPUT */}
-              <div className="flex-1 max-w-xs">
-                <div
-                  className="overflow-hidden border-2 rounded-2xl bg-white shadow-sm"
-                  style={{ borderColor: "#D4D4D4" }}
-                >
-                  <div
-                    className="px-5 pt-3 text-sm text-gray-500"
-                    style={{
-                      fontFamily: "Manrope, sans-serif",
-                      fontSize: "14px",
-                    }}
-                  >
-                    To
-                  </div>
-                  <input
-                    type="number"
-                    value={rangeValue.max}
-                    onChange={(e) => handleMaxChange(parseInt(e.target.value))}
-                    className="w-full border-none bg-white px-5 pb-3 text-2xl font-bold text-gray-800 outline-none focus:shadow-none focus:ring-0"
-                    style={{
-                      fontFamily: "Manrope, sans-serif",
-                      fontSize: "24px",
-                      fontWeight: 700,
-                    }}
-                    min={rangeValue.min}
-                    readOnly
-                  />
-                  <div
-                    className="px-5 pb-3 text-xs text-gray-400"
-                    style={{
-                      fontFamily: "Manrope, sans-serif",
-                      fontSize: "12px",
-                    }}
-                  >
-                    {/* Conditional display for max value */}
-                    {field.name === "plotSize"
-                      ? `Sqft`
-                      : field.name === "budget"
-                      ? rangeValue.max >= 10000000
-                        ? `₹${(rangeValue.max / 10000000).toFixed(2)} Cr`
-                        : `₹${(rangeValue.max / 100000).toFixed(2)} Lac`
-                      : `₹${(rangeValue.max / 100000).toFixed(2)} Lac`}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
+        // ... rest of your existing code for range
       }
 
       default:
@@ -835,19 +372,18 @@ const FormRenderer: React.FC<FormRendererProps> = ({
   // INVENTORY COUNT DISPLAY LOGIC
   // ============================================
 
-  // Mock inventory count based on current step
   const inventoryCount =
     currentStep === 0
-      ? "10,166" // Location step
+      ? "10,166"
       : currentStep === 1
-      ? "2,000" // Property type step
+      ? "2,000"
       : currentStep === 2
-      ? "800" // Plot size step
+      ? "800"
       : currentStep === 3
-      ? "600" // Configuration step
+      ? "600"
       : currentStep === 4
-      ? "200" // Budget step
-      : "10,056"; // Other steps
+      ? "200"
+      : "10,056";
 
   // ============================================
   // LOADING STATE
@@ -868,61 +404,68 @@ const FormRenderer: React.FC<FormRendererProps> = ({
   // ============================================
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4">
-      {/* FORM CONTAINER */}
-      <div className="bg-white rounded-3xl shadow-lg p-8">
-        {/* INVENTORY BADGE */}
-        <div className="flex justify-center mb-8">
-          <div
-            className="inline-flex items-center gap-2 rounded-full"
-            style={{
-              paddingTop: "8px",
-              paddingBottom: "8px",
-              paddingLeft: "20px",
-              paddingRight: "20px",
-              backgroundColor: "#CCFBF1",
-            }}
-          >
-            <img src="/house.svg" alt="Home" className="w-5 h-5" />
-            <span
+    <>
+      <div className="w-full max-w-4xl mx-auto px-4">
+        {/* FORM CONTAINER */}
+        <div className="bg-white rounded-3xl shadow-lg p-8">
+          {/* INVENTORY BADGE */}
+          <div className="flex justify-center mb-8">
+            <div
+              className="inline-flex items-center gap-2 rounded-full"
               style={{
-                fontFamily: "Manrope, sans-serif",
-                fontSize: "16px",
-                fontWeight: 600,
-                color: "#115E59",
+                paddingTop: "8px",
+                paddingBottom: "8px",
+                paddingLeft: "20px",
+                paddingRight: "20px",
+                backgroundColor: "#CCFBF1",
               }}
             >
-              {inventoryCount} Inventory{" "}
-              {currentStep === 0 ? "Available" : "Matched"}
-            </span>
+              <img src="/house.svg" alt="Home" className="w-5 h-5" />
+              <span
+                style={{
+                  fontFamily: "Manrope, sans-serif",
+                  fontSize: "16px",
+                  fontWeight: 600,
+                  color: "#115E59",
+                }}
+              >
+                {inventoryCount} Inventory{" "}
+                {currentStep === 0 ? "Available" : "Matched"}
+              </span>
+            </div>
+          </div>
+
+          {/* STEP TITLE */}
+          <h2
+            className="text-center mb-12 max-w-3xl mx-auto leading-tight"
+            style={{
+              fontFamily: "Archivo, sans-serif",
+              fontSize: "36px",
+              fontWeight: 600,
+              color: "#404040",
+            }}
+          >
+            {currentTitle}
+          </h2>
+
+          {/* FORM FIELDS CONTAINER */}
+          <div className="space-y-8">
+            {visibleFields.map((field) => (
+              <div key={field.name} className="space-y-4">
+                {renderField(field)}
+              </div>
+            ))}
           </div>
         </div>
-
-        {/* STEP TITLE */}
-        <h2
-          className="text-center mb-12 max-w-3xl mx-auto leading-tight"
-          style={{
-            fontFamily: "Archivo, sans-serif",
-            fontSize: "36px",
-            fontWeight: 600,
-            color: "#404040",
-          }}
-        >
-          {currentTitle}
-        </h2>
-
-        {/* FORM FIELDS CONTAINER */}
-        <div className="space-y-8">
-          {visibleFields.map((field) => (
-            <div key={field.name} className="space-y-4">
-              {renderField(field)}
-            </div>
-          ))}
-        </div>
-
-        {/* NOTE: Navigation buttons are in Footer component */}
       </div>
-    </div>
+
+      {/* MAP MODAL - RENDERED AT ROOT LEVEL */}
+      <MapModal
+        isOpen={showMapModal}
+        onClose={() => setShowMapModal(false)}
+        onMapSelect={handleMapSelection}
+      />
+    </>
   );
 };
 

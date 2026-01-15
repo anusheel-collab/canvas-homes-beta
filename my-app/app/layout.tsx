@@ -1,4 +1,6 @@
+// app/layout.tsx
 import "./globals.css";
+import { MapsProvider } from "./components/common/DeepSearch/MapsContext";
 
 export default function RootLayout({
   children,
@@ -8,7 +10,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
+        <MapsProvider>{children}</MapsProvider>
       </body>
     </html>
   );
