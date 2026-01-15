@@ -14,52 +14,53 @@ export default function RangeSlider({
   ...props
 }: RangeSliderProps) {
   return (
-    <div className="w-[480px] relative">
-      <Slider
-        className={cn(
-          className,
-          "[&>.rc-slider-rail]:!bg-[#E5E5E5]",
-          "[&>.rc-slider-track]:!bg-[#171717]",
-          "[&>.rc-slider-rail]:!h-2",
-          "[&>.rc-slider-track]:!h-2",
-          // Hide default handle visuals
-          "[&>.rc-slider-handle]:!border-0",
-          "[&>.rc-slider-handle]:!bg-transparent",
-          "[&>.rc-slider-handle]:!shadow-none"
-        )}
-        handleStyle={[
-          {
-            width: "40.5px",
-            height: "29px",
-            marginTop: "-14.5px",
-            border: "none",
-            background: "url('/rangehead.svg') no-repeat center",
-            backgroundSize: "contain",
-            cursor: "pointer",
-            opacity: 1,
-            // Remove default handle border/shadow
-            boxShadow: "none",
-            borderColor: "transparent",
-          },
-          {
-            width: "40.5px",
-            height: "29px",
-            marginTop: "-14.5px",
-            border: "none",
-            background: "url('/rangehead.svg') no-repeat center",
-            backgroundSize: "contain",
-            cursor: "pointer",
-            opacity: 1,
-            // Remove default handle border/shadow
-            boxShadow: "none",
-            borderColor: "transparent",
-          },
-        ]}
-        activeDotStyle={{
-          display: "none", // Hide active dot
-        }}
-        {...props}
-      />
+    <div className="relative flex justify-center w-full pr-[480px]">
+      <style jsx global>{`
+        /* Completely override rc-slider handle styles */
+        .rc-slider-handle {
+          width: 40.5px !important;
+          height: 29px !important;
+          margin-top: -6.5px !important;
+          border: none !important;
+          background: url("/rangehead.svg") no-repeat center !important;
+          background-size: contain !important;
+          cursor: pointer !important;
+          opacity: 1 !important;
+          box-shadow: none !important;
+          background-color: transparent !important;
+        }
+
+        .rc-slider-handle:focus,
+        .rc-slider-handle:active,
+        .rc-slider-handle-click-focused:focus,
+        .rc-slider-handle-dragging {
+          border: none !important;
+          box-shadow: none !important;
+          background-color: transparent !important;
+        }
+
+        /* Hide the inner dot of rc-slider handle */
+        .rc-slider-handle::after {
+          display: none !important;
+        }
+
+        /* Change bar height to 16px */
+        .rc-slider-rail {
+          height: 16px !important;
+          background-color: #e5e5e5 !important;
+          border-radius: 8px !important;
+        }
+
+        .rc-slider-track {
+          height: 16px !important;
+          background-color: #171717 !important;
+          border-radius: 8px !important;
+        }
+      `}</style>
+
+      <div className="w-[480px]">
+        <Slider className={cn(className)} {...props} />
+      </div>
     </div>
   );
 }
