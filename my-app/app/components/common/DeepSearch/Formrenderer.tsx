@@ -162,7 +162,9 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     setFormData(newFormData);
   };
 
-  const handleAutocomplete = (
+  // In FormRenderer.tsx, update the handleAutocomplete function:
+
+  const handleAutocomplete = async (
     fieldName: string,
     query: string,
     field: FormField
@@ -171,9 +173,16 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     setActiveField(fieldName);
 
     if (query.length > 0 && field.getSuggestions) {
-      const results = field.getSuggestions(query);
-      setSuggestions(results);
-      setShowSuggestions(true);
+      try {
+        // Call the async getSuggestions function
+        const results = await field.getSuggestions(query);
+        setSuggestions(results);
+        setShowSuggestions(true);
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
     } else {
       setSuggestions([]);
       setShowSuggestions(false);
@@ -216,17 +225,23 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                 onChange={(e) =>
                   handleAutocomplete(field.name, e.target.value, field)
                 }
-                onFocus={() => {
+                onFocus={async () => {
                   setActiveField(field.name);
                   if (
                     searchQuery[field.name]?.length > 0 &&
                     field.getSuggestions
                   ) {
-                    const results = field.getSuggestions(
-                      searchQuery[field.name]
-                    );
-                    setSuggestions(results);
-                    setShowSuggestions(true);
+                    try {
+                      const results = await field.getSuggestions(
+                        searchQuery[field.name]
+                      );
+                      setSuggestions(results);
+                      setShowSuggestions(true);
+                    } catch (error) {
+                      console.error("Error fetching suggestions:", error);
+                      setSuggestions([]);
+                      setShowSuggestions(false);
+                    }
                   }
                 }}
                 placeholder={field.placeholder}

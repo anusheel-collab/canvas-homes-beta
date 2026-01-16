@@ -170,7 +170,7 @@ export function GoogleMapContainer({
       zoom={12}
       onLoad={onLoad}
       options={mapOptions}
-  >
+    >
       {/* REFERENCE MARKERS */}
       {REFERENCE_MARKERS.map((marker) => {
         const isActive = selectedPropertyId === String(marker.id);
@@ -184,16 +184,16 @@ export function GoogleMapContainer({
             onMouseOver={() => handleMarkerMouseOver(marker.id)}
             onMouseOut={handleMarkerMouseOut}
             onClick={() => handleMarkerClick(marker.id)}
-            icon={{
-              url:
-                isActive || isHover
-                  ? "/marker-active.png" // Update with your actual icon paths
-                  : "/marker-default.png",
-              scaledSize: new google.maps.Size(
-                isActive || isHover ? 40 : 30,
-                isActive || isHover ? 40 : 30
-              ),
-            }}
+            // icon={{
+            //   url:
+            //     isActive || isHover
+            //       ? "/marker-active.png" // Update with your actual icon paths
+            //       : "/marker-default.png",
+            //   scaledSize: new google.maps.Size(
+            //     isActive || isHover ? 40 : 30,
+            //     isActive || isHover ? 40 : 30
+            //   ),
+            // }}
           />
         );
       })}
