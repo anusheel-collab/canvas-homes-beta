@@ -170,6 +170,21 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     setFormData(newFormData);
   };
 
+  // Handle click outside to close suggestions
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest(".autocomplete-container")) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   // ============================================
   // CURRENT LOCATION HANDLER
   // ============================================
@@ -282,23 +297,24 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     setSearchQuery((prev) => ({ ...prev, [fieldName]: query }));
     setActiveField(fieldName);
 
+    // Always show special options when field is active
+    if (activeField === fieldName) {
+      setShowSuggestions(true);
+    }
+
+    // Fetch Google suggestions only if query is not empty
     if (query.length > 0 && field.getSuggestions) {
       try {
-        // Call the async getSuggestions function
         const results = await field.getSuggestions(query);
         setSuggestions(results);
-        setShowSuggestions(true);
       } catch (error) {
         console.error("Error fetching suggestions:", error);
         setSuggestions([]);
-        setShowSuggestions(false);
       }
     } else {
       setSuggestions([]);
-      setShowSuggestions(false);
     }
   };
-
   const selectSuggestion = (fieldName: string, value: string) => {
     handleFieldChange(fieldName, value);
     setSearchQuery((prev) => ({ ...prev, [fieldName]: value }));
@@ -315,7 +331,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     switch (field.type) {
       case "autocomplete":
         return (
-          <div className="relative w-full max-w-[470px] mx-auto">
+          <div className="relative w-full max-w-[470px] mx-auto autocomplete-container">
             <div
               className="flex items-center gap-3 bg-white transition-colors"
               style={{
@@ -335,23 +351,22 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                 onChange={(e) =>
                   handleAutocomplete(field.name, e.target.value, field)
                 }
-                onFocus={async () => {
+                onFocus={() => {
                   setActiveField(field.name);
+                  setShowSuggestions(true); // Always show special options on focus
+
+                  // Only fetch suggestions if there's already text in the input
                   if (
                     searchQuery[field.name]?.length > 0 &&
                     field.getSuggestions
                   ) {
-                    try {
-                      const results = await field.getSuggestions(
-                        searchQuery[field.name]
-                      );
-                      setSuggestions(results);
-                      setShowSuggestions(true);
-                    } catch (error) {
-                      console.error("Error fetching suggestions:", error);
-                      setSuggestions([]);
-                      setShowSuggestions(false);
-                    }
+                    field
+                      .getSuggestions(searchQuery[field.name])
+                      .then((results) => setSuggestions(results))
+                      .catch((error) => {
+                        console.error("Error fetching suggestions:", error);
+                        setSuggestions([]);
+                      });
                   }
                 }}
                 placeholder={field.placeholder}
@@ -368,6 +383,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
               />
             </div>
 
+            {/* SHOW SUGGESTIONS WHEN FIELD IS ACTIVE (CLICKED/FOCUSED) */}
             {showSuggestions && activeField === field.name && (
               <div
                 className="absolute left-0 z-10 w-full bg-white rounded-2xl shadow-xl overflow-hidden mt-2"
@@ -528,7 +544,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                   </div>
                 )}
 
-                {/* REGULAR SUGGESTIONS */}
+                {/* REGULAR SUGGESTIONS (ONLY SHOW WHEN USER HAS TYPED) */}
                 {suggestions.length > 0 && (
                   <>
                     <div className="px-4 py-2 bg-gray-50">
@@ -561,11 +577,18 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                     ))}
                   </>
                 )}
+
+                {/* EMPTY STATE MESSAGE WHEN NO SUGGESTIONS */}
+                {suggestions.length === 0 &&
+                  searchQuery[field.name]?.length > 0 && (
+                    <div className="px-4 py-3 text-center text-gray-500">
+                      No locations found. Try a different search term.
+                    </div>
+                  )}
               </div>
             )}
           </div>
         );
-
       // ============================================
       // PROPERTY TYPE & DEVELOPER PAGES - MULTISELECT FIELDS
       // ============================================
