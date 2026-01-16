@@ -6,7 +6,7 @@ import { formConfig, FormField, FormStep } from "./formConfig";
 import RangeSlider from "./RangeSlider";
 import { cn } from "./utils/cn";
 import { MapModal } from "./MapModal";
-
+import { MapPreview } from "./MapPreview";
 // ============================================
 // INTERFACE DEFINITIONS
 // ============================================
@@ -57,6 +57,16 @@ const FormRenderer: React.FC<FormRendererProps> = ({
   const [isLocating, setIsLocating] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
 
+  // ADD THESE STATES FOR MAP PREVIEW
+  const [selectedLocation, setSelectedLocation] = useState<{
+    lat: number;
+    lng: number;
+    address: string;
+    type: "suggestion" | "current" | "map";
+  } | null>(null);
+  const [selectedRadius, setSelectedRadius] = useState<number>(2); // Default 2km
+  const [showMapPreview, setShowMapPreview] = useState(false);
+
   const getVisibleSteps = useMemo(() => {
     return formConfig.steps.filter((step) => {
       if (!step.condition) return true;
@@ -76,23 +86,42 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     console.log("Selected area from map:", selectedArea);
 
     if (activeField) {
-      // Update the form field with the selected area
-      handleFieldChange(activeField, "Custom Drawn Area");
+      const displayName = selectedArea.area || "Custom Drawn Area";
 
-      // Also store the detailed map selection
-      handleFieldChange("selectedLocation", {
-        type: "mapSelection",
-        coordinates: selectedArea.coordinates || [],
-        area: selectedArea.area || "Custom Drawn Area",
-        propertyCount: selectedArea.propertyCount || 0,
-        displayName: "Custom Drawn Area",
-      });
+      // Update the form field with the selected area
+      handleFieldChange(activeField, displayName);
 
       // Update search query to show the selected area
       setSearchQuery((prev) => ({
         ...prev,
-        [activeField]: "Custom Drawn Area",
+        [activeField]: displayName,
       }));
+
+      // Set selected location for map preview
+      // Calculate center of drawn polygon for preview
+      const coordinates = selectedArea.coordinates || [];
+      let centerLat = 12.9716;
+      let centerLng = 77.5946;
+
+      if (coordinates.length > 0) {
+        const sum = coordinates.reduce(
+          (acc: any, coord: any) => {
+            return { lat: acc.lat + coord.lat, lng: acc.lng + coord.lng };
+          },
+          { lat: 0, lng: 0 }
+        );
+
+        centerLat = sum.lat / coordinates.length;
+        centerLng = sum.lng / coordinates.length;
+      }
+
+      setSelectedLocation({
+        lat: centerLat,
+        lng: centerLng,
+        address: displayName,
+        type: "map",
+      });
+      setShowMapPreview(true);
     }
 
     setShowMapModal(false);
@@ -133,6 +162,14 @@ const FormRenderer: React.FC<FormRendererProps> = ({
 
   const isStepValid = useMemo(() => {
     if (!currentStepConfig) return false;
+
+    // Check if this is the location step
+    if (currentStepConfig.id === "location") {
+      // For location step, require a selected location to show map preview
+      return !!selectedLocation && !!formData["location"];
+    }
+
+    // For other steps, use original validation
     return visibleFields.every((field) => {
       if (!field.required) return true;
       const value = formData[field.name];
@@ -143,7 +180,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
       }
       return true;
     });
-  }, [visibleFields, formData, currentStepConfig]);
+  }, [visibleFields, formData, currentStepConfig, selectedLocation]);
 
   // ============================================
   // EFFECTS FOR PARENT COMMUNICATION
@@ -185,6 +222,13 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     };
   }, []);
 
+  // Handle input focus - hide map preview when clicking search box again
+  const handleInputFocus = () => {
+    setActiveField("location");
+    setShowSuggestions(true);
+    setShowMapPreview(false); // Hide map preview when clicking search box
+  };
+
   // ============================================
   // CURRENT LOCATION HANDLER
   // ============================================
@@ -219,6 +263,15 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                 handleFieldChange(activeField, address);
                 setSearchQuery((prev) => ({ ...prev, [activeField]: address }));
                 setShowSuggestions(false);
+
+                // Set selected location for map preview
+                setSelectedLocation({
+                  lat: latitude,
+                  lng: longitude,
+                  address: address,
+                  type: "current",
+                });
+                setShowMapPreview(true);
               }
             } else {
               // If geocoding fails, use coordinates
@@ -232,6 +285,15 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                   [activeField]: locationText,
                 }));
                 setShowSuggestions(false);
+
+                // Set selected location for map preview
+                setSelectedLocation({
+                  lat: latitude,
+                  lng: longitude,
+                  address: locationText,
+                  type: "current",
+                });
+                setShowMapPreview(true);
               }
             }
           });
@@ -247,6 +309,15 @@ const FormRenderer: React.FC<FormRendererProps> = ({
               [activeField]: locationText,
             }));
             setShowSuggestions(false);
+
+            // Set selected location for map preview
+            setSelectedLocation({
+              lat: latitude,
+              lng: longitude,
+              address: locationText,
+              type: "current",
+            });
+            setShowMapPreview(true);
           }
         }
       },
@@ -276,7 +347,6 @@ const FormRenderer: React.FC<FormRendererProps> = ({
       }
     );
   };
-
   // Auto-clear location errors after 5 seconds
   useEffect(() => {
     if (locationError) {
@@ -286,6 +356,13 @@ const FormRenderer: React.FC<FormRendererProps> = ({
       return () => clearTimeout(timer);
     }
   }, [locationError]);
+
+  // Reset map preview when leaving location page
+  useEffect(() => {
+    if (currentStep !== 0) {
+      setShowMapPreview(false);
+    }
+  }, [currentStep]);
 
   // In FormRenderer.tsx, update the handleAutocomplete function:
 
@@ -315,11 +392,48 @@ const FormRenderer: React.FC<FormRendererProps> = ({
       setSuggestions([]);
     }
   };
+
   const selectSuggestion = (fieldName: string, value: string) => {
     handleFieldChange(fieldName, value);
     setSearchQuery((prev) => ({ ...prev, [fieldName]: value }));
     setShowSuggestions(false);
     setSuggestions([]);
+
+    // Set selected location for map preview
+    // For suggestions, we need to geocode the address to get coordinates
+    if (typeof google !== "undefined" && google.maps && google.maps.Geocoder) {
+      const geocoder = new google.maps.Geocoder();
+      geocoder.geocode({ address: value }, (results, status) => {
+        if (status === "OK" && results && results[0]) {
+          const location = results[0].geometry.location;
+          setSelectedLocation({
+            lat: location.lat(),
+            lng: location.lng(),
+            address: value,
+            type: "suggestion",
+          });
+          setShowMapPreview(true);
+        } else {
+          // Fallback to default coordinates
+          setSelectedLocation({
+            lat: 12.9716,
+            lng: 77.5946,
+            address: value,
+            type: "suggestion",
+          });
+          setShowMapPreview(true);
+        }
+      });
+    } else {
+      // Fallback if geocoder not available
+      setSelectedLocation({
+        lat: 12.9716,
+        lng: 77.5946,
+        address: value,
+        type: "suggestion",
+      });
+      setShowMapPreview(true);
+    }
   };
 
   // ============================================
@@ -353,7 +467,8 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                 }
                 onFocus={() => {
                   setActiveField(field.name);
-                  setShowSuggestions(true); // Always show special options on focus
+                  setShowSuggestions(true);
+                  setShowMapPreview(false); // Hide map preview when clicking search box
 
                   // Only fetch suggestions if there's already text in the input
                   if (
@@ -1231,6 +1346,36 @@ const FormRenderer: React.FC<FormRendererProps> = ({
               </div>
             ))}
           </div>
+
+          {/* MAP PREVIEW - SHOW WHEN LOCATION IS SELECTED AND ON LOCATION PAGE */}
+          {currentStep === 0 && showMapPreview && selectedLocation && (
+            <div className="mt-8 flex flex-col items-center">
+              <MapPreview
+                location={selectedLocation}
+                radius={selectedRadius}
+                onRadiusChange={setSelectedRadius}
+                onOpenMap={() => setShowMapModal(true)}
+                width={480}
+                height={280}
+              />
+
+              {/* Selection Info */}
+              <div className="mt-4 text-center">
+                <p className="text-sm text-gray-600">
+                  Selected:{" "}
+                  <span className="font-medium">
+                    {selectedLocation.address}
+                  </span>
+                  {selectedLocation.type === "current" &&
+                    " (Your Current Location)"}
+                  {selectedLocation.type === "map" && " (Custom Drawn Area)"}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {selectedRadius}km radius • Click "Draw" to modify area
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
