@@ -1,10 +1,8 @@
-// components/MapModal.tsx
 "use client";
 
 import { Modal } from "./Modal";
 import { GoogleMapContainer } from "./GoogleMapContainer";
-import { useEffect, useState } from "react";
-import { X, Check } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
 
 interface MapModalProps {
   isOpen: boolean;
@@ -23,71 +21,76 @@ export function MapModal({
   initialLocation,
 }: MapModalProps) {
   const [isClient, setIsClient] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+  const hasOpenedRef = useRef(false);
 
   useEffect(() => {
     setIsClient(true);
+    // Set ready state after a small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      setIsReady(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
-  // Handle escape key and body scroll
+  // Reset ready state when modal opens
   useEffect(() => {
+    if (isOpen && !hasOpenedRef.current) {
+      setIsReady(true);
+      hasOpenedRef.current = true;
+    }
+  }, [isOpen]);
+
+  // Handle escape key and body scroll - FIXED VERSION
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Save original styles
+    const originalOverflow = document.body.style.overflow;
+    const originalPaddingRight = document.body.style.paddingRight;
+
+    // Calculate scrollbar width to prevent layout shift
+    const scrollbarWidth =
+      window.innerWidth - document.documentElement.clientWidth;
+
+    // Lock body scroll
+    document.body.style.overflow = "hidden";
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
+      if (e.key === "Escape") {
         onClose();
       }
     };
 
-    if (isOpen) {
-      document.addEventListener("keydown", handleEscape);
-      document.body.style.overflow = "hidden";
-    }
+    document.addEventListener("keydown", handleEscape);
 
     return () => {
       document.removeEventListener("keydown", handleEscape);
-      document.body.style.overflow = "auto";
+      // Restore original styles
+      document.body.style.overflow = originalOverflow;
+      document.body.style.paddingRight = originalPaddingRight;
     };
   }, [isOpen, onClose]);
 
+  // Don't render anything if not client-side
   if (!isClient) return null;
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Draw Your Preferred Area"
-      size="full"
-    >
-      {/* Map Container */}
-      <div className="h-[calc(100vh-120px)] w-full">
-        {isOpen && (
+    <Modal isOpen={isOpen} onClose={onClose} size="map">
+      <div className="w-full h-full relative">
+        {/* Always render GoogleMapContainer when modal is open and ready */}
+        {isOpen && isReady && (
           <GoogleMapContainer
             isModal={true}
             initialCenter={initialLocation}
             onMapSelect={onMapSelect}
+            onClose={onClose}
           />
         )}
-      </div>
-
-      {/* Simple Footer with only Save and Cancel */}
-      <div className="absolute bottom-0 left-0 right-0 z-[1000] bg-white border-t border-gray-200">
-        <div className="flex items-center justify-end gap-3 px-6 py-4">
-          <button
-            onClick={onClose}
-            className="px-5 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-medium transition-colors flex items-center gap-2"
-          >
-            <X className="w-4 h-4" />
-            Cancel
-          </button>
-          <button
-            onClick={() => {
-              // This will be handled by GoogleMapContainer's apply button
-              console.log("Save clicked - handled by map component");
-            }}
-            className="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors flex items-center gap-2"
-          >
-            <Check className="w-4 h-4" />
-            Save Area
-          </button>
-        </div>
       </div>
     </Modal>
   );

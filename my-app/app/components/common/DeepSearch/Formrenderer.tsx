@@ -198,6 +198,20 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     }
   }, [formData, onFormDataUpdate]);
 
+  // Force modal to open at center of viewport
+  useEffect(() => {
+    if (showMapModal && currentStep === 0) {
+      // When modal opens, ensure we're at the top of the page
+      window.scrollTo(0, 0);
+
+      // Force a reflow to ensure modal positions correctly
+      requestAnimationFrame(() => {
+        // This ensures any pending DOM updates are completed
+        document.body.style.overflow = "hidden";
+      });
+    }
+  }, [showMapModal, currentStep]);
+
   // ============================================
   // EVENT HANDLERS
   // ============================================
@@ -358,11 +372,34 @@ const FormRenderer: React.FC<FormRendererProps> = ({
   }, [locationError]);
 
   // Reset map preview when leaving location page
+  // Reset map preview when leaving location page
   useEffect(() => {
     if (currentStep !== 0) {
       setShowMapPreview(false);
     }
   }, [currentStep]);
+
+  // ADD THIS NEW useEffect - RESET MODAL STATE WHEN LEAVING LOCATION PAGE
+  useEffect(() => {
+    // If we're NOT on the location page (step 0), close the modal and reset related states
+    if (currentStep !== 0) {
+      setShowMapModal(false);
+      setActiveField(null);
+      setShowSuggestions(false);
+    }
+  }, [currentStep]);
+
+  // Handle modal opening specifically for the location field
+  useEffect(() => {
+    if (showMapModal && currentStep === 0) {
+      // Force a re-render to ensure modal is properly displayed
+      const timer = setTimeout(() => {
+        // This triggers a re-render to ensure GoogleMapContainer loads
+      }, 50);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showMapModal, currentStep]);
 
   // In FormRenderer.tsx, update the handleAutocomplete function:
 
@@ -514,9 +551,20 @@ const FormRenderer: React.FC<FormRendererProps> = ({
               >
                 {/* MAP SEARCH OPTION - ALWAYS SHOW AT TOP */}
                 <div
-                  onClick={() => {
-                    setShowMapModal(true);
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // First, scroll to top to ensure modal opens centered
+                    window.scrollTo({ top: 0, behavior: "instant" });
+
+                    // Close suggestions
                     setShowSuggestions(false);
+
+                    // Force a small delay to ensure scroll completes
+                    setTimeout(() => {
+                      setShowMapModal(true);
+                    }, 10);
                   }}
                   className="group px-[8px] py-[10px] hover:bg-[#F5F5F5] cursor-pointer flex items-center gap-4 rounded-[6px] transition-colors border-b border-gray-100"
                 >
@@ -1379,12 +1427,14 @@ const FormRenderer: React.FC<FormRendererProps> = ({
         </div>
       </div>
 
-      {/* MAP MODAL - RENDERED AT ROOT LEVEL */}
-      <MapModal
-        isOpen={showMapModal}
-        onClose={() => setShowMapModal(false)}
-        onMapSelect={handleMapSelection}
-      />
+      {/* MAP MODAL - RENDERED AT ROOT LEVEL, BUT ONLY ON LOCATION PAGE */}
+      {currentStep === 0 && (
+        <MapModal
+          isOpen={showMapModal}
+          onClose={() => setShowMapModal(false)}
+          onMapSelect={handleMapSelection}
+        />
+      )}
     </>
   );
 };
