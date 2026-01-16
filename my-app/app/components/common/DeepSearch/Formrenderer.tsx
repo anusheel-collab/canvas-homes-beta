@@ -49,6 +49,14 @@ const FormRenderer: React.FC<FormRendererProps> = ({
   const [showMapModal, setShowMapModal] = useState(false);
   const [activeField, setActiveField] = useState<string | null>(null);
 
+  // ADD THESE STATES FOR LOCATION FUNCTIONALITY
+  const [userLocation, setUserLocation] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
+
   const getVisibleSteps = useMemo(() => {
     return formConfig.steps.filter((step) => {
       if (!step.condition) return true;
@@ -161,6 +169,108 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     const newFormData = { ...formData, [fieldName]: value };
     setFormData(newFormData);
   };
+
+  // ============================================
+  // CURRENT LOCATION HANDLER
+  // ============================================
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationError("Geolocation is not supported by your browser");
+      return;
+    }
+
+    setIsLocating(true);
+    setLocationError(null);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        const newLocation = { lat: latitude, lng: longitude };
+
+        setUserLocation(newLocation);
+        setIsLocating(false);
+
+        // Get the address from coordinates using reverse geocoding
+        if (
+          typeof google !== "undefined" &&
+          google.maps &&
+          google.maps.Geocoder
+        ) {
+          const geocoder = new google.maps.Geocoder();
+          geocoder.geocode({ location: newLocation }, (results, status) => {
+            if (status === "OK" && results && results[0]) {
+              const address = results[0].formatted_address;
+              if (activeField) {
+                handleFieldChange(activeField, address);
+                setSearchQuery((prev) => ({ ...prev, [activeField]: address }));
+                setShowSuggestions(false);
+              }
+            } else {
+              // If geocoding fails, use coordinates
+              const locationText = `${latitude.toFixed(6)}, ${longitude.toFixed(
+                6
+              )}`;
+              if (activeField) {
+                handleFieldChange(activeField, locationText);
+                setSearchQuery((prev) => ({
+                  ...prev,
+                  [activeField]: locationText,
+                }));
+                setShowSuggestions(false);
+              }
+            }
+          });
+        } else {
+          // Fallback if Google Geocoder not available
+          const locationText = `${latitude.toFixed(6)}, ${longitude.toFixed(
+            6
+          )}`;
+          if (activeField) {
+            handleFieldChange(activeField, locationText);
+            setSearchQuery((prev) => ({
+              ...prev,
+              [activeField]: locationText,
+            }));
+            setShowSuggestions(false);
+          }
+        }
+      },
+      (error) => {
+        setIsLocating(false);
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            setLocationError(
+              "Location access denied. Please enable location services."
+            );
+            break;
+          case error.POSITION_UNAVAILABLE:
+            setLocationError("Location information unavailable.");
+            break;
+          case error.TIMEOUT:
+            setLocationError("Location request timed out.");
+            break;
+          default:
+            setLocationError("An unknown error occurred.");
+            break;
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      }
+    );
+  };
+
+  // Auto-clear location errors after 5 seconds
+  useEffect(() => {
+    if (locationError) {
+      const timer = setTimeout(() => {
+        setLocationError(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [locationError]);
 
   // In FormRenderer.tsx, update the handleAutocomplete function:
 
@@ -325,6 +435,98 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                     </svg>
                   </div>
                 </div>
+
+                {/* MY LOCATION OPTION */}
+                <div
+                  onClick={() => !isLocating && getCurrentLocation()}
+                  className={`group px-[8px] py-[10px] flex items-center gap-4 rounded-[6px] transition-colors border-b border-gray-100 ${
+                    isLocating
+                      ? "cursor-not-allowed opacity-60"
+                      : "hover:bg-[#F5F5F5] cursor-pointer"
+                  }`}
+                >
+                  <div className="w-10 h-10 bg-green-50 rounded-[8px] px-[12px] py-[12px] flex items-center justify-center group-hover:bg-green-100 transition-colors">
+                    {isLocating ? (
+                      <div className="w-5 h-5 border-2 border-green-300 border-t-green-600 rounded-full animate-spin"></div>
+                    ) : (
+                      <svg
+                        className="w-5 h-5 stroke-green-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                      </svg>
+                    )}
+                  </div>
+                  <div className="flex flex-col flex-1">
+                    <span
+                      className="text-gray-800 font-semibold"
+                      style={{
+                        fontFamily: "Manrope, sans-serif",
+                        fontSize: "16px",
+                        color: "#262626",
+                      }}
+                    >
+                      {isLocating
+                        ? "Getting your location..."
+                        : "Use My Current Location"}
+                    </span>
+                    <span className="text-sm text-gray-500 mt-0.5">
+                      {isLocating
+                        ? "Please wait..."
+                        : "Automatically detect your location"}
+                    </span>
+                  </div>
+                  <div className="ml-auto">
+                    <svg
+                      className="w-5 h-5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* LOCATION ERROR MESSAGE */}
+                {locationError && (
+                  <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-lg mx-4 my-2">
+                    <div className="flex items-center">
+                      <svg
+                        className="w-5 h-5 text-red-500 mr-2"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <span className="text-sm text-red-700 font-medium">
+                        {locationError}
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 {/* REGULAR SUGGESTIONS */}
                 {suggestions.length > 0 && (
