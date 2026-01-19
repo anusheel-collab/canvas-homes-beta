@@ -38,7 +38,7 @@ export function Modal({
     lg: "max-w-4xl",
     xl: "max-w-6xl",
     full: "max-w-[95vw] h-[90vh]",
-    map: "w-[1236px] h-[576px]", // Your exact dimensions
+    map: "w-[1236px] h-[576px]",
   };
 
   const isMapSize = size === "map";
