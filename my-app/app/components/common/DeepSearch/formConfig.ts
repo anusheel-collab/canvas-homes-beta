@@ -31,7 +31,7 @@ export interface FormField {
   searchPlaceholder?: string;
   condition?: (formData: any) => boolean;
   filterOptions?: (options: any[], formData: any) => any[];
-  getSuggestions?: (query: string) => Promise<string[]>; // NEW LINE
+  getSuggestions?: (query: string) => Promise<string[]>;
   formatValue?: (value: number) => string;
 }
 
@@ -47,7 +47,6 @@ export interface FormConfig {
 }
 
 // Function to get suggestions from Google Places API
-// In formConfig.ts, update the getGooglePlacesSuggestions function:
 
 const getGooglePlacesSuggestions = (query: string): Promise<string[]> => {
   return new Promise((resolve) => {
@@ -169,7 +168,6 @@ export const formConfig: FormConfig = {
         },
       ],
     },
-    // ... rest of your steps remain the same
     {
       id: "propertyType",
       title: "Perfect! Now, let's narrow down the property type a bit more.",
