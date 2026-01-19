@@ -32,7 +32,7 @@ const SuggestionBox: React.FC<SuggestionBoxProps> = ({
 
   return (
     <div
-      className="absolute left-0 z-10 mt-[12px] w-[416px] max-h-[306px] overflow-y-auto bg-[#FAFAFA] rounded-2xl shadow-xl border border-[#D4D4D4] py-[16px] px-[16px]"
+      className="absolute left-0 z-10 mt-[12px] w-[416px] max-h-[306px] rounded-[6px] overflow-y-auto bg-[#FAFAFA] rounded-2xl shadow-xl border border-[#D4D4D4] py-[16px] px-[16px]"
       style={{
         scrollbarWidth: "thin",
         scrollbarColor: "#D9D9D9 #F5F5F5",

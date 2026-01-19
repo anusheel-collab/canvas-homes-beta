@@ -64,16 +64,16 @@ export function MapPreview({
   const radiusOptions = [2, 3, 5];
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 mx-auto w-[480px]">
+    <div className="bg-white rounded-2xl w-[480px] h-[280px] shadow-lg overflow-hidden border border-gray-200 mx-auto w-[480px]">
       {/* Header */}
-      <div className="flex items-center px-4 py-3 bg-gray-50 border-b border-gray-200">
+      {/* <div className="flex items-center px-4 py-3 bg-gray-50 border-b border-gray-200">
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <MapPin className="w-5 h-5 text-gray-600 shrink-0" />
           <span className="text-sm font-medium text-gray-700 truncate">
             {location.address}
           </span>
         </div>
-      </div>
+      </div> */}
 
       {/* Map Image Container */}
       <div className="relative h-[160px]">
@@ -115,7 +115,7 @@ export function MapPreview({
       </div>
 
       {/* Radius Selector */}
-      <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
+      <div className="px-4 bg-gray-50 border-t border-gray-200">
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-gray-700">
             Preferred Distance
