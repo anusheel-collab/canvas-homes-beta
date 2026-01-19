@@ -57,19 +57,11 @@ export function Modal({
 
       {/* MODAL CONTAINER - Centered via Flexbox */}
       <div
-        className={`relative z-10 ${sizeClasses[size]} transition-all my-auto`}
-        style={
+        className={`relative z-10 ${sizeClasses[size]} transition-all my-auto ${
           isMapSize
-            ? {
-                width: "1236px",
-                height: "576px",
-                border: "16px solid white", // Your requested 16px white border
-                borderRadius: "24px",
-                backgroundColor: "white",
-                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
-              }
-            : {}
-        }
+            ? "w-[1236px] h-[576px] border-[16px] border-[#FFFFFF] rounded-[24px] bg-[#FFFFFF] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]"
+            : ""
+        }`}
       >
         <div
           className={`bg-white h-full w-full overflow-hidden ${

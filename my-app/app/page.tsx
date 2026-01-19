@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Header from "./components/common/DeepSearch/Header";
 import Footer from "./components/common/DeepSearch/Footer";
 import Loader from "./components/common/DeepSearch/Loader";
-import FormRenderer from "./components/common/DeepSearch/FormRenderer";
+import FormRenderer from "./components/common/DeepSearch/FormRenderer/index";
 
 export default function HomePage() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -44,8 +44,7 @@ export default function HomePage() {
   };
 
   // Reset to step 0 if needed
-  useEffect(() => {
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <div className="min-h-screen flex flex-col">

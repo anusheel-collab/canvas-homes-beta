@@ -30,7 +30,7 @@ export function MapPreview({
   const getCirclePoints = (
     centerLat: number,
     centerLng: number,
-    radiusKm: number
+    radiusKm: number,
   ) => {
     const points = [];
     const earthRadius = 6371;
@@ -57,17 +57,14 @@ export function MapPreview({
     const circlePath = `fillcolor:0x4285F440|color:0x4285F4FF|weight:2|${polyPoints}`;
 
     return `https://maps.googleapis.com/maps/api/staticmap?center=${center}&zoom=${zoom}&size=${width}x${height}&scale=2&markers=color:red%7C${center}&path=${encodeURIComponent(
-      circlePath
+      circlePath,
     )}&key=${apiKey}`;
   };
 
   const radiusOptions = [2, 3, 5];
 
   return (
-    <div
-      className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 mx-auto"
-      style={{ width: `${width}px` }}
-    >
+    <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 mx-auto w-[480px]">
       {/* Header */}
       <div className="flex items-center px-4 py-3 bg-gray-50 border-b border-gray-200">
         <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -79,7 +76,7 @@ export function MapPreview({
       </div>
 
       {/* Map Image Container */}
-      <div className="relative" style={{ height: `${height - 120}px` }}>
+      <div className="relative h-[160px]">
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
             <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>

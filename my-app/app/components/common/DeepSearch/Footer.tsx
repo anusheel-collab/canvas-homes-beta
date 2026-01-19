@@ -30,12 +30,7 @@ export default function Footer({
 
   return (
     <footer>
-      <div
-        className="flex items-center justify-between bg-white py-[20px] px-[47px]"
-        style={{
-          borderTop: "1px solid #D1D5DB",
-        }}
-      >
+      <div className="flex items-center justify-between bg-white py-[20px] px-[47px] border-t border-[#D1D5DB]">
         {/* Left side - Back button */}
         {showBack && currentStep > 0 ? (
           <BackButton label="Back" onClick={onBack} />

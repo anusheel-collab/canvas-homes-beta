@@ -9,68 +9,32 @@ export default function Loader({ percentage }: LoaderProps) {
 
   return (
     <div className="w-full px-6">
-      <div className="relative w-full" style={{ height: "32px" }}>
+      <div className="relative w-full h-[32px]">
         {/* Background: Unfilled progress - color #D4D4D4 - FULL WIDTH */}
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            transform: "translateY(-50%)",
-            width: "100%",
-            height: "4px",
-            backgroundColor: "#D4D4D4",
-            borderRadius: "8px",
-          }}
-        />
+        <div className="absolute top-1/2 -translate-y-1/2 w-full h-[4px] bg-[#D4D4D4] rounded-[8px]" />
 
         {/* Foreground: Filled progress - color #404040 */}
         <div
+          className="absolute top-1/2 -translate-y-1/2 h-[4px] bg-[#404040]"
           style={{
-            position: "absolute",
-            top: "50%",
-            transform: "translateY(-50%)",
             width: `${safePercentage}%`,
-            height: "4px",
-            backgroundColor: "#404040",
             borderRadius: safePercentage === 100 ? "8px" : "0 8px 8px 0",
           }}
         />
 
         {/* Circular head at the end of progress */}
         <div
+          className="absolute top-1/2 inline-flex h-[32px] min-w-[32px] px-[4px] justify-center items-center gap-[10px] bg-[#404040] rounded-[400px]"
           style={{
-            position: "absolute",
-            top: "50%",
             left: `${safePercentage}%`,
-            // Shift head 4px to the left at 0%, otherwise center it
             transform:
               safePercentage === 0
-                ? "translate(0px, -50%)" // 4px to the right at 0%
-                : "translate(-50%, -50%)", // Centered for all other positions
-            borderRadius: "400px",
-            backgroundColor: "#404040",
-            display: "inline-flex",
-            height: "32px",
-            minWidth: "32px",
-            padding: "0 4px",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "10px",
+                ? "translate(0px, -50%)"
+                : "translate(-50%, -50%)",
           }}
         >
           {/* Percentage inside circular head */}
-          <span
-            style={{
-              color: "#FAFAFA",
-              textAlign: "center",
-              fontFamily: "Manrope, sans-serif",
-              fontSize: "12px",
-              fontStyle: "normal",
-              fontWeight: 600,
-              lineHeight: "150%",
-              whiteSpace: "nowrap",
-            }}
-          >
+          <span className="text-[#FAFAFA] text-center font-manrope text-[12px] font-semibold leading-[150%] whitespace-nowrap">
             {safePercentage.toFixed(0)}%
           </span>
         </div>

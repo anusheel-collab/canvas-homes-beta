@@ -15,9 +15,6 @@ export default function BackButton({
     <button
       disabled={disabled}
       onClick={onClick}
-      style={{
-        fontSize: "16px",
-      }}
       className={`
         bg-transparent
         border-none
@@ -31,6 +28,7 @@ export default function BackButton({
         
         text-gray-700
         font-medium
+        text-[16px]
 
         transition-all
         duration-150
