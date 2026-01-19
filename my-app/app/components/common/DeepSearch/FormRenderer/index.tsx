@@ -167,7 +167,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
         {/* FORM CONTAINER */}
         <div className="bg-white rounded-3xl shadow-lg p-8">
           {/* INVENTORY BADGE */}
-          <div className="flex justify-center mb-8">
+          <div className="flex mt-[25px] justify-center mb-8">
             <div className="inline-flex items-center gap-2 rounded-full py-[8px] px-[20px] bg-[#CCFBF1]">
               <img src="/house.svg" alt="Home" className="w-5 h-5" />
               <span className="font-manrope text-[16px] font-semibold text-[#115E59]">
@@ -178,14 +178,14 @@ const FormRenderer: React.FC<FormRendererProps> = ({
           </div>
 
           {/* STEP TITLE */}
-          <h2 className="text-center mb-12 max-w-3xl mx-auto leading-tight font-archivo text-[36px] font-semibold text-[#404040]">
+          <h2 className="text-center mb-12 max-w-[690px] mx-auto leading-tight font-archivo text-[36px] font-semibold text-[#404040]">
             {currentTitle}
           </h2>
 
           {/* FORM FIELDS CONTAINER */}
           <div className="space-y-8">
             {visibleFields.map((field) => (
-              <div key={field.name} className="space-y-4">
+              <div key={field.name} className="space-y-4 mt-[56px]">
                 {renderField(field)}
               </div>
             ))}

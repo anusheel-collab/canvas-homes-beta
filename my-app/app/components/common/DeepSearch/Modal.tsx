@@ -45,7 +45,7 @@ export function Modal({
 
   return (
     <div
-      className="fixed top-1/2 -translate-y-1/2 inset-0 z-[9999] flex items-center justify-center p-4"
+      className="fixed translate-x-[250px] -translate-y-[210px] inset-0 z-[9999] p-4"
       aria-modal="true"
       role="dialog"
     >
@@ -59,7 +59,7 @@ export function Modal({
       <div
         className={`relative z-10 ${sizeClasses[size]} transition-all my-auto ${
           isMapSize
-            ? "w-[1236px] h-[576px] border-[16px] border-[#FFFFFF] rounded-[24px] bg-[#FFFFFF] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]"
+            ? "w-[1236px] h-[576px] border-[0px] border-[#FFFFFF] rounded-[24px] bg-[#FFFFFF] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]"
             : ""
         }`}
       >

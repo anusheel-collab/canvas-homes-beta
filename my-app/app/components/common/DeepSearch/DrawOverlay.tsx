@@ -1,4 +1,3 @@
-// components/DrawOverlay.tsx
 "use client";
 
 import { useMapStore } from "./mapStore";
@@ -13,21 +12,17 @@ export function DrawOverlay() {
     <div
       className="
         absolute top-0 left-0 w-full
-        bg-[rgba(0,0,0,0.55)] text-white
-        z-[9999] flex items-center justify-between
+        bg-[rgba(255,255,255,0.6)]
+        z-[9999] flex items-center
         px-[15px] text-[16px]
         h-[60px]
       "
     >
-      <span>Draw a shape around the region(s) you would like to live in</span>
-
-      <div className="flex items-center gap-[14px]">
+      {/* Right – Cancel & Apply */}
+      <div className="ml-auto flex items-center gap-[14px]">
         <button
           onClick={resetDrawArea}
-          className="
-            bg-transparent border-none text-white
-            text-[16px] cursor-pointer
-          "
+          className="bg-transparent text-black text-[16px] cursor-pointer"
         >
           Cancel
         </button>
@@ -37,8 +32,8 @@ export function DrawOverlay() {
           disabled={drawnPolygons.length === 0}
           className="
             bg-transparent text-[16px] rounded-[4px]
-            border-none text-white px-[14px] py-[6px] font-normal
-            disabled:cursor-not-allowed cursor-pointer
+            text-black px-[14px] py-[6px] font-normal
+            disabled:cursor-not-allowed
             disabled:opacity-50
           "
         >

@@ -74,7 +74,7 @@ export function GoogleMapContainer({
         });
       }
     },
-    [setMap, isModal]
+    [setMap, isModal],
   );
 
   const handleMarkerClick = useCallback(
@@ -85,7 +85,7 @@ export function GoogleMapContainer({
         map.panTo({ lat: marker.lat, lng: marker.lng });
       }
     },
-    [map, setSelectedPropertyId]
+    [map, setSelectedPropertyId],
   );
 
   if (!isLoaded)
@@ -142,7 +142,7 @@ export function GoogleMapContainer({
         ))}
 
         <DrawOverlay />
-        <DrawTool />
+        <DrawTool onClose={onClose} />
       </GoogleMap>
     </div>
   );

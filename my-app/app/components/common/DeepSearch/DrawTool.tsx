@@ -5,7 +5,11 @@ import { useRef, useEffect } from "react";
 import { useMapStore } from "./mapStore";
 import { useFilterStore } from "./filtersStore";
 
-export function DrawTool() {
+type DrawToolProps = {
+  onClose?: () => void;
+};
+
+export function DrawTool({ onClose }: DrawToolProps) {
   const {
     map,
     drawingMode,
@@ -53,7 +57,7 @@ export function DrawTool() {
           "mousemove",
           (ev: google.maps.MapMouseEvent) => {
             if (ev.latLng) polyline.getPath().push(ev.latLng);
-          }
+          },
         );
 
         mouseUpRef.current = map.addListener("mouseup", finishDraw);
@@ -62,7 +66,7 @@ export function DrawTool() {
           google.maps.event.removeListener(startListenerRef.current);
           startListenerRef.current = null;
         }
-      }
+      },
     );
   };
 
@@ -162,24 +166,50 @@ export function DrawTool() {
    * UI
    * ----------------------------------- */
   return (
-    <div className="absolute top-[10px] right-[10px] z-[100]">
-      {!drawingMode && drawnPolygons.length === 0 && (
-        <button
-          onClick={beginDraw}
-          className="px-3 py-1.5 bg-white text-black font-semibold border border-black rounded-[3px]"
-        >
-          Draw
-        </button>
-      )}
+    <>
+      {/* EXTREME TOP-LEFT – CLOSE MODAL */}
+      <button
+        onClick={() => {
+          resetDrawArea();
+          onClose?.();
+        }}
+        className="
+        absolute top-[12px] left-[12px]
+        z-[1000]
+        w-[36px] h-[36px]
+        flex items-center justify-center
+        rounded-full
+        bg-white
+        border border-gray-300
+        text-black
+        hover:bg-gray-100
+        pointer-events-auto
+      "
+        aria-label="Close map modal"
+      >
+        ✕
+      </button>
 
-      {!drawingMode && drawnPolygons.length > 0 && (
-        <button
-          onClick={resetDrawArea}
-          className="px-3 py-1.5 bg-white text-black font-semibold border border-black rounded-[3px]"
-        >
-          Remove Boundary
-        </button>
-      )}
-    </div>
+      {/* TOP-RIGHT – DRAW CONTROLS (THIS WAS MISSING) */}
+      <div className="absolute top-[10px] right-[10px] z-[1000] pointer-events-auto">
+        {!drawingMode && drawnPolygons.length === 0 && (
+          <button
+            onClick={beginDraw}
+            className="px-3 py-1.5 bg-white text-black font-semibold border border-black rounded-[3px]"
+          >
+            Draw
+          </button>
+        )}
+
+        {!drawingMode && drawnPolygons.length > 0 && (
+          <button
+            onClick={resetDrawArea}
+            className="px-3 py-1.5 bg-white text-black font-semibold border border-black rounded-[3px]"
+          >
+            Remove Boundary
+          </button>
+        )}
+      </div>
+    </>
   );
 }

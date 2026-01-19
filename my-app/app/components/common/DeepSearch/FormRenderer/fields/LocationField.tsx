@@ -65,8 +65,8 @@ const LocationField: React.FC<LocationFieldProps> = ({
 
   return (
     <>
-      <div className="relative w-full max-w-[470px] mx-auto autocomplete-container">
-        <div className="flex items-center gap-3 bg-white border border-[#D4D4D4] py-[4px] px-[16px] rounded-[6px] transition-colors">
+      <div className="relative w-full max-w-[448px] mx-auto autocomplete-container">
+        <div className="flex items-center gap-3 bg-white border border-[#D4D4D4] py-[10px] px-[16px] rounded-[6px] transition-colors">
           {Icon && <Icon className="w-5 h-5 text-[#737373]" />}
 
           <input
