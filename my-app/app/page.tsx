@@ -11,8 +11,6 @@ export default function HomePage() {
   const [isValid, setIsValid] = useState(false);
   const [formData, setFormData] = useState({});
 
-  // FIXED: Use maximum possible steps (worst-case scenario)
-  // This doesn't change based on user selections
   // location + propertyType + plotSize + configuration + budget + projectType + developer = 7 steps
   const MAX_TOTAL_STEPS = 7;
 
@@ -47,7 +45,6 @@ export default function HomePage() {
 
   // Reset to step 0 if needed
   useEffect(() => {
-    // You can add any reset logic here if needed
   }, []);
 
   return (
