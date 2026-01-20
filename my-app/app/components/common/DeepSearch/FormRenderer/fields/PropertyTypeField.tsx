@@ -84,7 +84,13 @@ const PropertyTypeField: React.FC<PropertyTypeFieldProps> = ({
                 )}
 
                 {/* PROPERTY TYPE LABEL */}
-                <div className="font-manrope text-[18px] mt-[60px] ml-[30px] font-semibold text-gray-800 w-[168px] h-[36px]">
+                <div
+                  className={`${
+                    field.name === "configuration"
+                      ? "font-manrope text-[18px] mt-[60px] ml-[30px] font-semibold text-gray-800 w-[168px] h-[36px]"
+                      : "font-manrope text-[18px] font-semibold text-gray-800 w-[168px] h-[36px]"
+                  }`}
+                >
                   {option.label}
                 </div>
 
