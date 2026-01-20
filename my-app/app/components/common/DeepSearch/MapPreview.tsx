@@ -48,13 +48,13 @@ export function MapPreview({
     }
     return points.join("|");
   };
-
+  // map radius change here
   const getStaticMapUrl = () => {
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
     const center = `${location.lat},${location.lng}`;
     const zoom = radius === 2 ? 14 : radius === 3 ? 13 : 12;
     const polyPoints = getCirclePoints(location.lat, location.lng, radius);
-    const circlePath = `fillcolor:0x4285F440|color:0x4285F4FF|weight:2|${polyPoints}`;
+    const circlePath = `fillcolor:0xDBDBDB7A|color:0x0A0A0AFF|weight:2|${polyPoints}`;
 
     return `https://maps.googleapis.com/maps/api/staticmap?center=${center}&zoom=${zoom}&size=${width}x${height}&scale=2&markers=color:red%7C${center}&path=${encodeURIComponent(
       circlePath,

@@ -124,7 +124,7 @@ const LocationField: React.FC<LocationFieldProps> = ({
           />
 
           {/* Selection Info */}
-          <div className="mt-4 text-center">
+          {/* <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">
               Selected:{" "}
               <span className="font-medium">{selectedLocation.address}</span>
@@ -135,7 +135,7 @@ const LocationField: React.FC<LocationFieldProps> = ({
             <p className="text-xs text-gray-500 mt-1">
               {selectedRadius}km radius • Click "Draw" to modify area
             </p>
-          </div>
+          </div> */}
         </div>
       )}
 
