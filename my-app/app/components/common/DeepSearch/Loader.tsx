@@ -24,7 +24,7 @@ export default function Loader({ percentage }: LoaderProps) {
 
         {/* Circular head at the end of progress */}
         <div
-          className="absolute top-1/2 inline-flex h-[32px] min-w-[32px] px-[4px] justify-center items-center gap-[10px] bg-[#404040] rounded-[400px]"
+          className="absolute top-1/2 inline-flex h-[32px] min-w-[29px] px-[4px] justify-center items-center gap-[10px] bg-[#404040] rounded-[800px]"
           style={{
             left: `${safePercentage}%`,
             transform:

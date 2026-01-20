@@ -9,6 +9,7 @@ interface ModalProps {
   children: ReactNode;
   title?: string;
   size?: "sm" | "md" | "lg" | "xl" | "full" | "map";
+  className?: string;
 }
 
 export function Modal({
@@ -17,6 +18,7 @@ export function Modal({
   children,
   title,
   size = "lg",
+  className = "",
 }: ModalProps) {
   // Prevent background scrolling when modal is open
   useEffect(() => {
@@ -45,7 +47,7 @@ export function Modal({
 
   return (
     <div
-      className="fixed translate-x-[250px] -translate-y-[380px] inset-0 z-[9999] p-4"
+      className={`fixed top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 inset-0 z-[9999] p-4 ${className}`}
       aria-modal="true"
       role="dialog"
     >
