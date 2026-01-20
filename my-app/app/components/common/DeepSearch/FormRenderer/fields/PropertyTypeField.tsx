@@ -21,7 +21,7 @@ const PropertyTypeField: React.FC<PropertyTypeFieldProps> = ({
   return (
     <div className="w-full space-y-6 max-w-4xl mx-auto">
       {/* PROPERTY TYPE SELECTION (VISUAL) */}
-      <div className="flex flex-wrap justify-center gap-[24px] max-w-[calc(3*168px+2*24px)] mx-auto">
+      <div className="flex flex-wrap justify-center gap-[24px] max-w-[calc(3*200px+2*24px)] mx-auto">
         {options.map((option: any) => {
           const isSelected = selectedValues.includes(option.value);
 
@@ -36,13 +36,24 @@ const PropertyTypeField: React.FC<PropertyTypeFieldProps> = ({
                     : [...selectedValues, option.value],
                 )
               }
-              className={`relative text-center transition-all bg-[#FAFAFA] py-[12px_20px] px-[16px] rounded-[16px] ${
-                isSelected
-                  ? "border-2 border-black"
-                  : "border-2 border-[#A3A3A3]"
+              className={`relative transition-all ${
+                field.name === "configuration" // When in configuration step
+                  ? // CONFIGURATION STYLE (apartment-style banners)
+                    `flex px-[16px] py-[20px] justify-center items-center gap-[16px] flex-1 min-w-0 rounded-[8px] border-[1.5px] ${
+                      isSelected
+                        ? "border-[#D4D4D4] bg-[#FAFAFA] mt-[20px] text-[#262626]"
+                        : "border-[#D4D4D4] bg-[#FAFAFA] text-[#262626] mt-[20px] hover:bg-[#F5F5F5]"
+                    }`
+                  : // DEFAULT PROPERTY TYPE STYLE
+                    `text-center bg-[#FAFAFA] py-[12px_20px] px-[16px] rounded-[16px] ${
+                      isSelected
+                        ? "border-2 border-black"
+                        : "border-2 border-[#E5E5E5]"
+                    }`
               }`}
               style={{
-                width: "168px",
+                width: field.name === "configuration" ? "189px" : "200px",
+                height: field.name === "configuration" ? "24px" : undefined,
               }}
             >
               <div className="flex flex-col items-center gap-3">
@@ -73,7 +84,7 @@ const PropertyTypeField: React.FC<PropertyTypeFieldProps> = ({
                 )}
 
                 {/* PROPERTY TYPE LABEL */}
-                <div className="font-manrope text-[18px] font-semibold text-gray-800 w-[168px] h-[36px]">
+                <div className="font-manrope text-[18px] mt-[60px] ml-[30px] font-semibold text-gray-800 w-[168px] h-[36px]">
                   {option.label}
                 </div>
 
@@ -89,6 +100,11 @@ const PropertyTypeField: React.FC<PropertyTypeFieldProps> = ({
                     )
                   }
                   size="small"
+                  className={`${
+                    field.name === "configuration"
+                      ? "translate-x-[-40px] translate-y-[-49px]"
+                      : ""
+                  }`}
                   sx={{
                     color: "#D1D5DB",
                     "&.Mui-checked": {

@@ -45,7 +45,7 @@ export function Modal({
 
   return (
     <div
-      className="fixed translate-x-[250px] -translate-y-[210px] inset-0 z-[9999] p-4"
+      className="fixed translate-x-[250px] -translate-y-[380px] inset-0 z-[9999] p-4"
       aria-modal="true"
       role="dialog"
     >
