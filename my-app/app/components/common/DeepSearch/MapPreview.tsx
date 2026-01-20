@@ -64,7 +64,7 @@ export function MapPreview({
   const radiusOptions = [2, 3, 5];
 
   return (
-    <div className="bg-white rounded-2xl w-[480px] h-[280px] shadow-lg overflow-hidden border border-gray-200 mx-auto w-[480px]">
+    <div className="bg-white rounded-2xl w-[480px] h-[280px] mt-[16px] rounded-[8px]  shadow-lg overflow-hidden border border-[#E5E5E5] mx-auto w-[480px]">
       {/* Header */}
       {/* <div className="flex items-center px-4 py-3 bg-gray-50 border-b border-gray-200">
         <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -76,7 +76,7 @@ export function MapPreview({
       </div> */}
 
       {/* Map Image Container */}
-      <div className="relative h-[160px]">
+      <div className="relative w-[480px] h-[280px]">
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
             <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
@@ -93,31 +93,31 @@ export function MapPreview({
         />
 
         {/* --- OVERLAYS (Top Right) --- */}
-        <div className="absolute top-3 right-3 flex flex-col gap-2 items-end z-20">
+        <div className="translate-y-[-280px] top-3 right-3 flex flex-col gap-2 items-end">
           {/* Conditional Rendering: Only show if type is NOT "current" */}
           {location.type !== "current" && (
             <button
               onClick={onOpenMap}
-              className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-all shadow-md active:scale-95"
+              className="translate-x-[-10px] w-[80px] h-[37px] rounded-[8px] border-none gap-2 px-3 py-2 bg-blue-600 text-[#FAFAFA] bg-[#262626] text-white text-[14px] font-bold rounded-lg hover:bg-blue-700 transition-all shadow-md active:scale-95"
             >
-              <Edit2 className="w-3.5 h-3.5" />
-              DRAW AREA
+              <Edit2 className="w-[13.34px] h-[13.34px] color-[#FAFAFA]" />
+              Draw
             </button>
           )}
 
           {/* Radius Distance Label */}
-          <div className="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg shadow-sm border border-gray-100">
+          {/* <div className="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg shadow-sm border border-gray-100">
             <span className="text-xs font-semibold text-gray-800">
               {radius} km radius
             </span>
-          </div>
+          </div> */}
         </div>
       </div>
 
       {/* Radius Selector */}
-      <div className="px-4 bg-gray-50 border-t border-gray-200">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-gray-700">
+      <div className="translate-y-[-50px] left-0 right-0 h-[55px] px-4 bg-[rgba(255,255,255,0.60)] backdrop-blur-sm border-gray-200/50 rounded-lg z-30">
+        <div className="flex items-center justify-between py-3">
+          <span className="translate-y-[5px] translate-x-[15px] text-[16px] font-[600] text-[#262626]">
             Preferred Distance
           </span>
           <div className="flex gap-2">
@@ -128,10 +128,10 @@ export function MapPreview({
                   setIsLoading(true);
                   onRadiusChange(option);
                 }}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
+                className={`text-sm w-[57px] h-[37px] rounded-[8px] font-medium transition-all ${
                   radius === option
-                    ? "bg-blue-600 text-white shadow-sm"
-                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                    ? "bg-blue-600 text-white shadow-lg mt-[7px] mr-[10px]"
+                    : "bg-white/80 text-gray-800 border mt-[7px] mr-[10px] border-gray-300/70 border-[1px] border-[#D4D4D4] hover:bg-gray-100"
                 }`}
               >
                 {option} km
@@ -139,11 +139,11 @@ export function MapPreview({
             ))}
           </div>
         </div>
-        <div className="mt-1">
-          <p className="text-xs text-gray-500 text-right">
+        {/* <div className="pb-2">
+          <p className="text-xs text-gray-700 text-right">
             Select radius around your location
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
   );
