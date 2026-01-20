@@ -3,9 +3,6 @@ import { MapModal } from "../../MapModal";
 import { MapPreview } from "../../MapPreview";
 import SuggestionBox from "../components/SuggestionBox";
 
-// ============================================
-// COMPLETE PROPS INTERFACE
-// ============================================
 interface LocationFieldProps {
   field: any;
   formData: any;
@@ -40,7 +37,7 @@ const LocationField: React.FC<LocationFieldProps> = ({
   field,
   formData,
   searchQuery,
-  suggestions, // <-- MAKE SURE THIS IS IN THE DESTRUCTURING
+  suggestions,
   showSuggestions,
   activeField,
   showMapModal,
@@ -77,7 +74,6 @@ const LocationField: React.FC<LocationFieldProps> = ({
               onSetShowSuggestions(true);
               onHandleInputFocus();
 
-              // Only fetch suggestions if there's already text in the input
               if (searchQuery[field.name]?.length > 0 && field.getSuggestions) {
                 field
                   .getSuggestions(searchQuery[field.name])
@@ -95,12 +91,11 @@ const LocationField: React.FC<LocationFieldProps> = ({
           />
         </div>
 
-        {/* SUGGESTION BOX COMPONENT */}
         <SuggestionBox
           fieldName={field.name}
           showSuggestions={showSuggestions}
           activeField={activeField}
-          suggestions={suggestions} // <-- THIS IS PASSING THE suggestions prop
+          suggestions={suggestions}
           searchQuery={searchQuery}
           isLocating={isLocating}
           locationError={locationError}
@@ -111,35 +106,20 @@ const LocationField: React.FC<LocationFieldProps> = ({
         />
       </div>
 
-      {/* MAP PREVIEW - SHOW WHEN LOCATION IS SELECTED AND ON LOCATION PAGE */}
       {currentStep === 0 && showMapPreview && selectedLocation && (
         <div className="mt-8 flex flex-col items-center">
           <MapPreview
             location={selectedLocation}
-            radius={selectedRadius}
+            // Logic: Fallback to 5 if the parent state is uninitialized
+            radius={selectedRadius || 5}
             onRadiusChange={onSetSelectedRadius}
             onOpenMap={() => onSetShowMapModal(true)}
             width={480}
             height={280}
           />
-
-          {/* Selection Info */}
-          {/* <div className="mt-4 text-center">
-            <p className="text-sm text-gray-600">
-              Selected:{" "}
-              <span className="font-medium">{selectedLocation.address}</span>
-              {selectedLocation.type === "current" &&
-                " (Your Current Location)"}
-              {selectedLocation.type === "map" && " (Custom Drawn Area)"}
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
-              {selectedRadius}km radius • Click "Draw" to modify area
-            </p>
-          </div> */}
         </div>
       )}
 
-      {/* MAP MODAL */}
       {currentStep === 0 && (
         <MapModal
           isOpen={showMapModal}
