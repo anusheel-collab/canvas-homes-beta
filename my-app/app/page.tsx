@@ -20,12 +20,12 @@ export default function HomePage() {
     MAX_TOTAL_STEPS > 0 ? (currentStep / (MAX_TOTAL_STEPS - 1)) * 100 : 0;
 
   useEffect(() => {
-    // Start fading at 3.5 seconds
+    // Start fading at 2.5 seconds
     const fadeTimer = setTimeout(() => {
       setIsFadingOut(true);
     }, 2500);
 
-    // Remove completely at 4 seconds
+    // Remove completely at 3 seconds
     const removeTimer = setTimeout(() => {
       setIsWelcomeActive(false);
     }, 3000);
@@ -52,7 +52,7 @@ export default function HomePage() {
     setFormData(newFormData);
   };
 
-  // 1. Welcome Screen (Centered using flex-col and min-h-screen)
+  // Welcome Screen
   if (isWelcomeActive) {
     return (
       <div
@@ -72,7 +72,7 @@ export default function HomePage() {
     );
   }
 
-  // 2. Normal Form View (Visible after fade out)
+  // Normal Form View (Visible after fade out)
   return (
     <div className="min-h-screen flex flex-col animate-in fade-in duration-700">
       <Header />
