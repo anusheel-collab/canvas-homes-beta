@@ -101,7 +101,7 @@ const getGooglePlacesSuggestions = (query: string): Promise<string[]> => {
           const suggestions = predictions
             .map((prediction) => prediction.description)
             .filter(
-              (description, index, self) => self.indexOf(description) === index
+              (description, index, self) => self.indexOf(description) === index,
             )
             .slice(0, 8);
           console.log("Google API suggestions:", suggestions);
@@ -135,7 +135,7 @@ const getGooglePlacesSuggestions = (query: string): Promise<string[]> => {
           console.log("Using fallback suggestions:", filtered);
           resolve(filtered);
         }
-      }
+      },
     );
   });
 };
@@ -232,28 +232,40 @@ export const formConfig: FormConfig = {
           ],
           filterOptions: (options: any[], formData: any) => {
             const types = formData.propertyType || [];
+
+            // First, create a copy of all options
+            let filteredOptions = [...options];
+
+            // Remove studio ONLY if apartment is completely absent
             const hasApartment = types.includes("apartment");
-
             if (!hasApartment) {
-              options = options.filter((opt) => opt.value !== "studio");
+              filteredOptions = filteredOptions.filter(
+                (opt) => opt.value !== "studio",
+              );
             }
 
-            if (
-              types.some((t: string) =>
-                ["villa", "villament", "rowHouses"].includes(t)
-              )
-            ) {
-              options = options.filter((opt) => opt.value !== "1bhk");
+            // Remove 1bhk ONLY if ALL selected types are villa/villament/rowHouses
+            // (i.e., no apartment is selected)
+            const onlyVillaTypes =
+              types.length > 0 &&
+              types.every((t: string) =>
+                ["villa", "villament", "rowHouses"].includes(t),
+              );
+
+            if (onlyVillaTypes) {
+              filteredOptions = filteredOptions.filter(
+                (opt) => opt.value !== "1bhk",
+              );
             }
 
-            return options;
+            return filteredOptions;
           },
         },
       ],
       condition: (formData: any) => {
         const selectedTypes = formData?.propertyType || [];
         return selectedTypes.some((type: string) =>
-          ["apartment", "villa", "villament", "rowHouses"].includes(type)
+          ["apartment", "villa", "villament", "rowHouses"].includes(type),
         );
       },
     },
@@ -268,8 +280,8 @@ export const formConfig: FormConfig = {
           unit: "₹",
           required: true,
           icon: DollarSign,
-          minValue: 2500000,
-          maxValue: 31000000,
+          minValue: 0,
+          maxValue: 50000000,
           step: 100000,
           formatValue: (value: number) => {
             if (value >= 10000000) {
