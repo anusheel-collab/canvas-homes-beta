@@ -23,6 +23,15 @@ const RangeField: React.FC<RangeFieldProps> = ({
   formatMaxValue,
   unit = "",
 }) => {
+  // 1. Get the unit from the field object (as defined in your formConfig)
+  const currentUnit = field.unit || "";
+
+  // 2. Normalize for case sensitivity ("Sqft" vs "sqft")
+  const isSqft = currentUnit.toLowerCase() === "sqft";
+
+  const minIcon = isSqft ? "/minimize.svg" : "/Rupee.svg";
+  const maxIcon = isSqft ? "/maximize.svg" : "/Rupee.svg";
+
   const rangeValue = formData[field.name] || {
     min: field.minValue,
     max: field.maxValue,
@@ -66,11 +75,11 @@ const RangeField: React.FC<RangeFieldProps> = ({
       <div className="flex items-center justify-center gap-6">
         {/* MIN VALUE INPUT */}
         <div className="flex-1 max-w-xs">
-          <div className="overflow-hidden w-[212px] px-[16px] py-[4px] translate-x-[598px] translate-y-[32px] rounded-[6px] h-[60px] border-2 border-[#D4D4D4] rounded-2xl bg-white shadow-sm">
+          <div className="overflow-hidden w-[212px] px-[16px] py-[4px] translate-x-[598px] translate-y-[40px] rounded-[6px] h-[60px] border-2 border-[#D4D4D4] rounded-2xl bg-white shadow-sm">
             <div className="w-6 h-6 relative ">
               <Image
-                src="/Rupee.svg"
-                alt="₹"
+                src={minIcon}
+                alt={unit === "Sqft" ? "Min area" : "₹"}
                 width={38}
                 height={38}
                 className="text-[#525252] translate-y-[11px]"
@@ -121,7 +130,7 @@ const RangeField: React.FC<RangeFieldProps> = ({
               />
             </div>
           </div>
-          <div className="font-manrope text-[14px] translate-x-[600px] translate-y-[37px] font-medium leading-[150%] text-[#737373]">
+          <div className="font-manrope text-[14px] translate-x-[600px] translate-y-[44px] font-medium leading-[150%] text-[#737373]">
             {formatMinValue
               ? formatMinValue(rangeValue.min)
               : `${rangeValue.min}${unit}`}
@@ -130,12 +139,12 @@ const RangeField: React.FC<RangeFieldProps> = ({
 
         {/* MAX VALUE INPUT */}
         <div className="flex-1 max-w-xs">
-          <div className="overflow-hidden w-[212px] h-[60px] px-[16px] py-[4px] translate-x-[10px] translate-y-[32px] border-2 border-[#D4D4D4] rounded-[6px] bg-white shadow-sm">
+          <div className="overflow-hidden w-[212px] h-[60px] px-[16px] py-[4px] translate-x-[10px] translate-y-[40px] border-2 border-[#D4D4D4] rounded-[6px] bg-white shadow-sm">
             <div className="flex items-center px-5 pt-3">
               <div className="w-6 h-6 relative">
                 <Image
-                  src="/Rupee.svg"
-                  alt="₹"
+                  src={maxIcon}
+                  alt={unit === "Sqft" ? "Max area" : "₹"}
                   width={38}
                   height={38}
                   className="text-[#525252] translate-y-[11px]"
@@ -186,7 +195,7 @@ const RangeField: React.FC<RangeFieldProps> = ({
               />
             </div>
           </div>
-          <div className="font-manrope text-[14px] translate-x-[10px] translate-y-[37px] font-medium leading-[150%] text-[#737373]">
+          <div className="font-manrope text-[14px] translate-x-[10px] translate-y-[44px] font-medium leading-[150%] text-[#737373]">
             {formatMaxValue
               ? formatMaxValue(rangeValue.max)
               : `${rangeValue.max}${unit}`}
