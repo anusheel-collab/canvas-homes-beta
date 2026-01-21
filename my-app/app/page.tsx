@@ -11,52 +11,77 @@ export default function HomePage() {
   const [isValid, setIsValid] = useState(false);
   const [formData, setFormData] = useState({});
 
-  // location + propertyType + plotSize + configuration + budget + projectType + developer = 7 steps
-  const MAX_TOTAL_STEPS = 7;
+  // States for the transition
+  const [isWelcomeActive, setIsWelcomeActive] = useState(true);
+  const [isFadingOut, setIsFadingOut] = useState(false);
 
-  // Progress based only on current step, not on selections
-  // This ensures progress only advances when clicking "Continue"
+  const MAX_TOTAL_STEPS = 7;
   const completionPercentage =
     MAX_TOTAL_STEPS > 0 ? (currentStep / (MAX_TOTAL_STEPS - 1)) * 100 : 0;
+
+  useEffect(() => {
+    // Start fading at 3.5 seconds
+    const fadeTimer = setTimeout(() => {
+      setIsFadingOut(true);
+    }, 2500);
+
+    // Remove completely at 4 seconds
+    const removeTimer = setTimeout(() => {
+      setIsWelcomeActive(false);
+    }, 3000);
+
+    return () => {
+      clearTimeout(fadeTimer);
+      clearTimeout(removeTimer);
+    };
+  }, []);
 
   const handleNext = () => {
     if (currentStep < MAX_TOTAL_STEPS - 1) {
       setCurrentStep(currentStep + 1);
     } else {
       console.log("Form submitted!", formData);
-      alert("Form submitted successfully!");
     }
   };
 
   const handleBack = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
+    if (currentStep > 0) setCurrentStep(currentStep - 1);
   };
 
-  const handleSkip = () => {
-    handleNext(); // Skip just moves to next step
-  };
-
-  // Handle form data updates from FormRenderer
   const handleFormDataUpdate = (newFormData: any) => {
     setFormData(newFormData);
   };
 
-  // Reset to step 0 if needed
-  useEffect(() => {}, []);
+  // 1. Welcome Screen (Centered using flex-col and min-h-screen)
+  if (isWelcomeActive) {
+    return (
+      <div
+        className={`min-h-screen bg-grid flex flex-col items-center justify-center transition-opacity duration-500 ${
+          isFadingOut ? "opacity-0" : "opacity-100"
+        }`}
+      >
+        <div className="text-center px-4">
+          <h1 className="text-[42px] font-archivo font-semibold text-[#404040] leading-tight">
+            Hi there! 👋 Ready to find your home?
+          </h1>
+          <p className="text-[20px] font-manrope text-gray-500 mt-6">
+            Let’s start! This takes less than a minute...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
+  // 2. Normal Form View (Visible after fade out)
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col animate-in fade-in duration-700">
       <Header />
 
       <main className="flex-1 bg-grid">
-        {/* Loader at the top - receives percentage from parent */}
         <div className="w-full mt-[36px] relative z-[60]">
           <Loader percentage={completionPercentage} />
         </div>
 
-        {/* Form */}
         <div className="h-full flex items-center justify-center">
           <FormRenderer
             onStepChange={setCurrentStep}
@@ -70,7 +95,7 @@ export default function HomePage() {
       <Footer
         onBack={handleBack}
         onNext={handleNext}
-        onSkip={handleSkip}
+        onSkip={handleNext}
         showBack={currentStep > 0}
         isNextDisabled={!isValid}
         currentStep={currentStep}
