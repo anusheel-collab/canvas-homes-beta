@@ -235,9 +235,9 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
 
           {/* DROPDOWN SUGGESTIONS */}
           {showDropdown && (
-            <div className="absolute top-full left-[0px] w-[511px] mt-[8px] bg-white border-1 border-[#D4D4D4] rounded-[16px] shadow-lg z-50">
+            <div className="absolute top-full left-[0px] w-[511px] mt-[8px] bg-[#FAFAFA] border-1 border-[#D4D4D4] rounded-[16px] shadow-[0px_8px_24px_rgba(0,0,0,0.1)] z-50">
               {/* SEARCH INPUT INSIDE DROPDOWN - FIXED AT TOP */}
-              <div className="bg-white p-[16px] pb-[12px] border-b-2 border-[#E5E5E5]">
+              <div className="bg-white p-[16px] pb-[12px] border-[#E5E5E5]">
                 <div className="relative">
                   <svg
                     className="absolute left-[12px] top-[50%] translate-y-[-50%] w-[20px] h-[20px] text-gray-400 pointer-events-none"
