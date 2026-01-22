@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { X } from "lucide-react";
 import Image from "next/image";
 import hardHatIcon from "@/public/hard-hat.svg";
+import { Manrope } from "next/font/google";
 
 interface DeveloperFieldProps {
   field: any;
@@ -10,6 +11,8 @@ interface DeveloperFieldProps {
   onFieldChange: (fieldName: string, value: any) => void;
   onSearchQueryChange: (fieldName: string, value: string) => void;
 }
+
+const manrope = Manrope({ subsets: ["latin"] });
 
 const DeveloperField: React.FC<DeveloperFieldProps> = ({
   field,
@@ -93,31 +96,33 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
           }
         }
       `}</style>
-      <div className="w-full max-w-[448px] sm:max-w-[625px] lg:max-w-[900px] mx-auto">
+      <div className="w-full max-w-[480px] mx-auto">
         {/* MAIN INPUT CONTAINER */}
         <div className="relative w-full" ref={dropdownRef}>
           <div
-            className="bg-white border-2 border-[#D4D4D4] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] p-[16px] sm:p-[20px] lg:p-[24px] transition-all duration-300 ease-in-out"
-            style={{ width: "100%" }}
+            className="bg-[#FAFAFA] border border-[#D4D4D4] rounded-[6px] px-[16px] py-[4px] flex items-center gap-[12px] transition-all duration-300 ease-in-out"
+            style={{ width: "480px", minHeight: "60px" }}
             id="search-container"
           >
             {/* ANIMATED LABEL */}
             <div
-              className="font-manrope font-medium transition-all duration-300 ease-in-out overflow-hidden"
+              className="font-manrope font-medium transition-all duration-300 ease-in-out overflow-hidden absolute left-[52px] pointer-events-none"
               style={{
                 fontSize: hasSelections ? "12px" : "14px",
                 color: hasSelections ? "#737373" : "#9CA3AF",
-                marginBottom: hasSelections ? "8px" : "0px",
-                height: hasSelections ? "auto" : "0px",
+                top: hasSelections ? "4px" : "50%",
                 opacity: hasSelections ? 1 : 0,
-                transform: hasSelections ? "translateY(0)" : "translateY(8px)",
+                transform: hasSelections ? "translateY(0)" : "translateY(-50%)",
               }}
             >
               Developers
             </div>
 
             {/* INPUT WITH TAGS INSIDE */}
-            <div className="flex items-center gap-[8px] flex-wrap transition-[height] duration-300 ease-in-out">
+            <div
+              className="flex items-center gap-[8px] flex-wrap transition-[height] duration-300 ease-in-out w-full"
+              style={{ paddingTop: hasSelections ? "20px" : "0" }}
+            >
               <Image
                 src={hardHatIcon}
                 alt="Developers"
@@ -132,12 +137,12 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
                 return (
                   <div
                     key={val}
-                    className="inline-flex items-center gap-[6px] px-[10px] py-[4px] sm:px-[12px] sm:py-[6px] bg-white border-2 border-black rounded-lg font-manrope text-[13px] sm:text-[14px] font-medium flex-shrink-0 animate-fadeIn"
+                    className="inline-flex items-center gap-[6px] px-[8px] py-[6px] bg-[#F5F5F5] border-[1.5px] border-[#262626] rounded-[6px] font-manrope text-[13px] font-medium flex-shrink-0"
                     style={{
                       animation: "fadeIn 0.3s ease-in-out",
                     }}
                   >
-                    <span>{opt?.label}</span>
+                    <span className="text-[#262626]">{opt?.label}</span>
                     <button
                       type="button"
                       onMouseDown={(e) => {
@@ -149,9 +154,12 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
                         e.stopPropagation();
                         handleToggleDeveloper(val);
                       }}
-                      className="hover:opacity-70 transition-opacity"
+                      className="hover:opacity-70 border-none bg-[#F5F5F5] transition-opacity"
                     >
-                      <X className="w-[12px] h-[12px] sm:w-[14px] sm:h-[14px]" />
+                      <X
+                        className="w-[14px] h-[14px] text-[#262626]"
+                        strokeWidth={2}
+                      />
                     </button>
                   </div>
                 );
@@ -160,7 +168,7 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
               {/* +N INDICATOR - Shows when more than 5 selections */}
               {showRemainingIndicator && (
                 <span
-                  className="font-manrope text-[13px] sm:text-[14px] font-medium text-gray-600 flex-shrink-0"
+                  className="font-manrope text-[13px] font-medium text-[#262626] flex-shrink-0"
                   style={{
                     animation: "fadeIn 0.3s ease-in-out",
                   }}
@@ -177,7 +185,7 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
                 placeholder={
                   hasSelections ? "" : field.placeholder || "Developers"
                 }
-                className="flex-1 min-w-[120px] border-none outline-none font-manrope text-[14px] sm:text-[15px] lg:text-[16px] text-gray-800 placeholder:text-gray-400 bg-transparent cursor-pointer"
+                className="flex-1 min-w-[120px] border-none outline-none font-manrope text-[14px] text-[#262626] placeholder:text-[#9CA3AF] bg-transparent cursor-pointer"
                 readOnly
               />
             </div>
@@ -185,11 +193,14 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
 
           {/* TOP DEVELOPERS SECTION - Shows when dropdown is CLOSED */}
           {!showDropdown && (
-            <div className="mt-[16px] sm:mt-[20px]">
-              <h3 className="text-[#262626] font-manrope text-[14px] sm:text-[15px] font-semibold mb-[12px]">
+            <div className="mt-[16px]">
+              <h3
+                className="text-[#262626] font-manrope text-[14px] font-semibold mb-[12px]"
+                style={{ lineHeight: "150%" }}
+              >
                 Top Developers for your Requirement
               </h3>
-              <div className="flex flex-wrap gap-[8px] sm:gap-[12px]">
+              <div className="flex flex-wrap gap-[8px]">
                 {topDevelopers.map((devName) => {
                   const devOption = options.find(
                     (o: any) => o.label === devName,
@@ -206,10 +217,10 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
                           handleToggleDeveloper(devOption.value);
                         }
                       }}
-                      className={`px-[16px] sm:px-[20px] py-[10px] sm:py-[12px] rounded-full font-manrope text-[13px] sm:text-[14px] font-medium transition-all ${
+                      className={`px-[16px] py-[8px] rounded-[32px] border font-manrope text-[14px] font-medium transition-all ${
                         isSelected
-                          ? "bg-black text-white"
-                          : "bg-[#F5F5F5] text-[#262626] hover:bg-[#E5E5E5]"
+                          ? "bg-[#F5F5F5] text-[#262626] border-[#262626]"
+                          : "bg-[#F5F5F5] text-[#262626] border-[#E5E5E5] hover:border-[#D4D4D4]"
                       }`}
                     >
                       {devName}
@@ -222,9 +233,9 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
 
           {/* DROPDOWN SUGGESTIONS */}
           {showDropdown && (
-            <div className="absolute top-full left-[0px] w-[480px] right-[0px] mt-[8px] bg-white border-2 border-[#D4D4D4] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] shadow-lg z-50">
+            <div className="absolute top-full left-[0px] w-[511px] mt-[8px] bg-white border-1 border-[#D4D4D4] rounded-[16px] shadow-lg z-50">
               {/* SEARCH INPUT INSIDE DROPDOWN - FIXED AT TOP */}
-              <div className="bg-white p-[16px] sm:p-[20px] pb-[16px] border-b-2 border-[#E5E5E5]">
+              <div className="bg-white p-[16px] pb-[12px] border-b-2 border-[#E5E5E5]">
                 <div className="relative">
                   <svg
                     className="absolute left-[12px] top-[50%] translate-y-[-50%] w-[20px] h-[20px] text-gray-400 pointer-events-none"
@@ -246,17 +257,17 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
                       onSearchQueryChange(field.name, e.target.value)
                     }
                     placeholder="Search Developer"
-                    className="pl-[44px] pr-[16px] py-[12px] w-[382px] border-2 border-[#D4D4D4] rounded-[12px] outline-none font-manrope text-[14px] sm:text-[15px] text-gray-800 placeholder:text-gray-400 focus:border-gray-400 transition-colors"
+                    className="pl-[44px] pr-[12px] w-[423px] py-[12px]  border border-[#E5E5E5] rounded-[8px] outline-none font-manrope text-[14px] text-[#262626] placeholder:text-[#9CA3AF] bg-[#FAFAFA] focus:border-[#D4D4D4] transition-colors"
                     autoFocus
                   />
                 </div>
               </div>
 
               {/* SCROLLABLE SUGGESTIONS CONTAINER */}
-              <div className="max-h-[300px] sm:max-h-[350px] lg:max-h-[400px] overflow-y-auto p-[16px] sm:p-[20px] pt-[0px]">
+              <div className="max-h-[350px] overflow-y-auto p-[16px] pt-[8px]">
                 {/* SUGGESTIONS LIST */}
                 {filteredOptions.length > 0 ? (
-                  <div className="space-y-[4px] pt-[16px]">
+                  <div className="space-y-[4px]">
                     {filteredOptions.map((option: any) => {
                       const isSelected = selectedValues.includes(option.value);
                       return (
@@ -271,19 +282,23 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
                             e.stopPropagation();
                             handleToggleDeveloper(option.value);
                           }}
-                          className="flex items-center gap-[12px] sm:gap-[16px] px-[12px] sm:px-[16px] py-[12px] sm:py-[14px] hover:bg-gray-50 cursor-pointer rounded-lg transition-colors"
+                          className={`flex items-center gap-[12px] px-[16px] py-[12px] cursor-pointer rounded-[8px] transition-colors ${
+                            isSelected
+                              ? "bg-[#F5F5F5] border border-[#262626]"
+                              : "hover:bg-[#FAFAFA]"
+                          }`}
                         >
                           {/* CHECKBOX */}
                           <div
-                            className={`w-[20px] h-[20px] sm:w-[24px] sm:h-[24px] border-2 rounded flex items-center justify-center flex-shrink-0 transition-all ${
+                            className={`w-[24px] h-[24px] border-2 rounded-[6px] flex items-center justify-center flex-shrink-0 transition-all ${
                               isSelected
-                                ? "bg-black border-black"
-                                : "border-gray-300 bg-white"
+                                ? "bg-[#262626] border-[#262626] text-[#FAFAFA]"
+                                : "border-[#D4D4D4] bg-white"
                             }`}
                           >
                             {isSelected && (
                               <svg
-                                className="w-[12px] h-[12px] sm:w-[16px] sm:h-[16px] text-white"
+                                className="w-[16px] h-[16px] text-white"
                                 fill="currentColor"
                                 viewBox="0 0 20 20"
                               >
@@ -297,7 +312,7 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
                           </div>
 
                           {/* DEVELOPER NAME */}
-                          <span className="text-gray-800 font-medium font-manrope text-[14px] sm:text-[15px] lg:text-[16px]">
+                          <span className="text-[#262626] font-medium font-manrope text-[14px]">
                             {option.label}
                           </span>
                         </div>
