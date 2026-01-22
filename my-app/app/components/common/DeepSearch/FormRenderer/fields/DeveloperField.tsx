@@ -106,7 +106,7 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
           >
             {/* ANIMATED LABEL */}
             <div
-              className="font-manrope font-medium transition-all duration-300 ease-in-out overflow-hidden absolute left-[52px] pointer-events-none"
+              className={`${manrope.className} font-medium transition-all duration-300 ease-in-out overflow-hidden absolute left-[52px] pointer-events-none`}
               style={{
                 fontSize: hasSelections ? "12px" : "14px",
                 color: hasSelections ? "#737373" : "#9CA3AF",
@@ -137,7 +137,7 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
                 return (
                   <div
                     key={val}
-                    className="inline-flex items-center gap-[6px] px-[8px] py-[6px] bg-[#F5F5F5] border-[1.5px] border-[#262626] rounded-[6px] font-manrope text-[13px] font-medium flex-shrink-0"
+                    className={`inline-flex items-center gap-[6px] px-[8px] py-[6px] bg-[#F5F5F5] border-[1.5px] border-[#262626] rounded-[6px] ${manrope.className} text-[13px] font-medium flex-shrink-0`}
                     style={{
                       animation: "fadeIn 0.3s ease-in-out",
                     }}
@@ -168,7 +168,7 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
               {/* +N INDICATOR - Shows when more than 5 selections */}
               {showRemainingIndicator && (
                 <span
-                  className="font-manrope text-[13px] font-medium text-[#262626] flex-shrink-0"
+                  className={`${manrope.className} text-[13px] font-medium text-[#262626] flex-shrink-0`}
                   style={{
                     animation: "fadeIn 0.3s ease-in-out",
                   }}
@@ -195,7 +195,7 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
           {!showDropdown && (
             <div className="mt-[16px]">
               <h3
-                className="text-[#262626] font-manrope text-[14px] font-semibold mb-[12px]"
+                className={`${manrope.className} text-[#262626] text-[14px] font-semibold mb-[12px]`}
                 style={{ lineHeight: "150%" }}
               >
                 Top Developers for your Requirement
@@ -217,7 +217,9 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
                           handleToggleDeveloper(devOption.value);
                         }
                       }}
-                      className={`px-[16px] py-[8px] rounded-[32px] border font-manrope text-[14px] font-medium transition-all ${
+                      className={`px-[16px] py-[8px] rounded-[32px] border ${
+                        manrope.className
+                      } text-[14px] font-medium transition-all ${
                         isSelected
                           ? "bg-[#F5F5F5] text-[#262626] border-[#262626]"
                           : "bg-[#F5F5F5] text-[#262626] border-[#E5E5E5] hover:border-[#D4D4D4]"
@@ -257,7 +259,7 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
                       onSearchQueryChange(field.name, e.target.value)
                     }
                     placeholder="Search Developer"
-                    className="pl-[44px] pr-[12px] w-[423px] py-[12px]  border border-[#E5E5E5] rounded-[8px] outline-none font-manrope text-[14px] text-[#262626] placeholder:text-[#9CA3AF] bg-[#FAFAFA] focus:border-[#D4D4D4] transition-colors"
+                    className={`pl-[44px] pr-[12px] w-[423px] py-[12px] border border-[#E5E5E5] rounded-[8px] outline-none ${manrope.className} text-[14px] text-[#262626] placeholder:text-[#9CA3AF] bg-[#FAFAFA] focus:border-[#D4D4D4] transition-colors`}
                     autoFocus
                   />
                 </div>
@@ -312,7 +314,9 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
                           </div>
 
                           {/* DEVELOPER NAME */}
-                          <span className="text-[#262626] font-medium font-manrope text-[14px]">
+                          <span
+                            className={`${manrope.className} text-[#262626] font-medium text-[14px]`}
+                          >
                             {option.label}
                           </span>
                         </div>
@@ -320,7 +324,9 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
                     })}
                   </div>
                 ) : (
-                  <div className="text-center py-[24px] text-gray-400 font-manrope text-[14px]">
+                  <div
+                    className={`text-center py-[24px] text-gray-400 ${manrope.className} text-[14px]`}
+                  >
                     No developers found
                   </div>
                 )}
