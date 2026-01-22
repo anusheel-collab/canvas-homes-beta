@@ -130,7 +130,6 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
         {showDropdown && (
           <div
             className="absolute top-full left-[0px] right-[0px] mt-[8px] bg-white border-2 border-[#D4D4D4] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] shadow-lg z-50"
-            style={{ width: "100%" }}
           >
             {/* SEARCH INPUT INSIDE DROPDOWN - FIXED AT TOP */}
             <div className="bg-white p-[16px] sm:p-[20px] pb-[16px] border-b-2 border-[#E5E5E5]">
@@ -227,3 +226,4 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
 };
 
 export default DeveloperField;
+
