@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
-
+import Image from "next/image";
+import hardHatIcon from "@/public/hard-hat.svg";
 interface DeveloperFieldProps {
   field: any;
   formData: any;
@@ -72,20 +73,13 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
 
           {/* INPUT WITH TAGS INSIDE */}
           <div className="flex items-center gap-[8px] flex-wrap">
-            {/* SEARCH ICON */}
-            <svg
-              className="w-[24px] h-[24px] text-gray-400 flex-shrink-0"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <circle cx="11" cy="11" r="8" strokeWidth="2" />
-              <path
-                d="m21 21-4.35-4.35"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
+            <Image
+              src={hardHatIcon}
+              alt="Developers"
+              width={24}
+              height={24}
+              className="flex-shrink-0"
+            />
 
             {/* SELECTED TAGS INSIDE INPUT */}
             {selectedValues.map((val) => {
@@ -128,9 +122,7 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
 
         {/* DROPDOWN SUGGESTIONS */}
         {showDropdown && (
-          <div
-            className="absolute top-full left-[0px] right-[0px] mt-[8px] bg-white border-2 border-[#D4D4D4] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] shadow-lg z-50"
-          >
+          <div className="absolute top-full left-[0px] w-[477px] right-[0px] mt-[8px] bg-white border-2 border-[#D4D4D4] rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] shadow-lg z-50">
             {/* SEARCH INPUT INSIDE DROPDOWN - FIXED AT TOP */}
             <div className="bg-white p-[16px] sm:p-[20px] pb-[16px] border-b-2 border-[#E5E5E5]">
               <div className="relative">
@@ -154,7 +146,7 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
                     onSearchQueryChange(field.name, e.target.value)
                   }
                   placeholder="Search Developer"
-                  className="w-full pl-[44px] pr-[16px] py-[12px] border-2 border-[#D4D4D4] rounded-[12px] outline-none font-manrope text-[14px] sm:text-[15px] text-gray-800 placeholder:text-gray-400 focus:border-gray-400 transition-colors"
+                  className="pl-[44px] pr-[16px] py-[12px] w-[382px] border-2 border-[#D4D4D4] rounded-[12px] outline-none font-manrope text-[14px] sm:text-[15px] text-gray-800 placeholder:text-gray-400 focus:border-gray-400 transition-colors"
                   autoFocus
                 />
               </div>
@@ -226,4 +218,3 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
 };
 
 export default DeveloperField;
-
