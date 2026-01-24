@@ -17,10 +17,8 @@ const PossessionField: React.FC<PossessionFieldProps> = ({
   const selectedValue = formData[field.name];
   const optionsCount = field.options?.length || 0;
 
-  // Calculate button width based on number of options to fit in one line
-  // Total available width: 555px - 40px (padding) = 515px
-  // Account for gaps: (optionsCount - 1) * 12px
-  const getButtonWidth = () => {
+  // Calculate button width for desktop (all in one line)
+  const getDesktopButtonWidth = () => {
     const containerWidth = 515; // 555 - 40 (left/right padding)
     const totalGap = (optionsCount - 1) * 12; // gaps between buttons
     const availableWidth = containerWidth - totalGap;
@@ -28,7 +26,7 @@ const PossessionField: React.FC<PossessionFieldProps> = ({
     return buttonWidth;
   };
 
-  const buttonWidth = getButtonWidth();
+  const desktopButtonWidth = getDesktopButtonWidth();
 
   return (
     <div className="flex justify-center px-4 sm:px-0">
@@ -37,7 +35,9 @@ const PossessionField: React.FC<PossessionFieldProps> = ({
         <div className="font-manrope text-[16px] font-medium text-[#737373]">
           Possession By
         </div>
-        <div className="flex gap-[12px]">
+
+        {/* Desktop: Single row with calculated widths */}
+        <div className="hidden sm:flex gap-[12px]">
           {field.options?.map((option: any) => {
             const isSelected = selectedValue === option.value;
             return (
@@ -50,9 +50,30 @@ const PossessionField: React.FC<PossessionFieldProps> = ({
                   isSelected ? "border-black" : "border-[#D4D4D4]"
                 }`}
                 style={{
-                  width: `${buttonWidth}px`,
+                  width: `${desktopButtonWidth}px`,
                   minWidth: "auto",
                 }}
+              >
+                {option.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Mobile: Grid layout - 3 columns, wraps to 2 on second row (left-aligned) */}
+        <div className="grid sm:hidden grid-cols-3 gap-[12px]">
+          {field.options?.map((option: any) => {
+            const isSelected = selectedValue === option.value;
+
+            return (
+              <button
+                key={option.value}
+                onClick={() => onFieldChange(field.name, option.value)}
+                className={`${
+                  manrope.className
+                } text-[14px] font-semibold text-[#404040] transition-all h-[48px] rounded-[8px] bg-white border flex items-center justify-center ${
+                  isSelected ? "border-black" : "border-[#D4D4D4]"
+                }`}
               >
                 {option.label}
               </button>
