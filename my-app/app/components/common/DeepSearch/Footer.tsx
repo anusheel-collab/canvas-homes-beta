@@ -30,7 +30,7 @@ export default function Footer({
 
   return (
     <footer>
-      <div className="flex items-center justify-between bg-white py-[20px] px-[47px] border-t border-[#D1D5DB]">
+      <div className="flex items-center justify-between bg-white py-[20px] px-[16px] sm:px-[30px] md:px-[47px] border-t border-[#D1D5DB]">
         {/* Left side - Back button */}
         {showBack && currentStep > 0 ? (
           <BackButton label="Back" onClick={onBack} />
@@ -39,7 +39,7 @@ export default function Footer({
         )}
 
         {/* Right side buttons container */}
-        <div className="flex flex-row gap-[30px]">
+        <div className="flex flex-row gap-[15px] sm:gap-[22px] md:gap-[30px]">
           {/* Skip button (only show if not on last step) */}
           {showSkipButton && <SkipButton onClick={onSkip || onNext} />}
 

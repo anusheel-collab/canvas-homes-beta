@@ -53,24 +53,24 @@ export default function HomePage() {
   };
 
   // Welcome Screen
-  if (isWelcomeActive) {
-    return (
-      <div
-        className={`min-h-screen bg-grid flex flex-col items-center justify-center transition-opacity duration-500 ${
-          isFadingOut ? "opacity-0" : "opacity-100"
-        }`}
-      >
-        <div className="text-center px-4">
-          <h1 className="text-[42px] font-archivo font-semibold text-[#404040] leading-tight">
-            Hi there! 👋 Ready to find your home?
-          </h1>
-          <p className="text-[20px] font-manrope text-gray-500 mt-6">
-            Let’s start! This takes less than a minute...
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // if (isWelcomeActive) {
+  //   return (
+  //     <div
+  //       className={`min-h-screen bg-grid flex flex-col items-center justify-center transition-opacity duration-500 ${
+  //         isFadingOut ? "opacity-0" : "opacity-100"
+  //       }`}
+  //     >
+  //       <div className="text-center px-4">
+  //         <h1 className="text-[42px] font-archivo font-semibold text-[#404040] leading-tight">
+  //           Hi there! 👋 Ready to find your home?
+  //         </h1>
+  //         <p className="text-[20px] font-manrope text-gray-500 mt-6">
+  //           Let’s start! This takes less than a minute...
+  //         </p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   // Normal Form View (Visible after fade out)
   return (
@@ -78,7 +78,7 @@ export default function HomePage() {
       <Header />
 
       <main className="flex-1 bg-grid">
-        <div className="w-full mt-[36px] relative z-[60]">
+        <div className="w-full mt-[46px] relative z-[60]">
           <Loader percentage={completionPercentage} />
         </div>
 

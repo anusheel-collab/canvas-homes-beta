@@ -101,7 +101,7 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
         <div className="relative w-full" ref={dropdownRef}>
           <div
             className="bg-[#FAFAFA] border border-[#D4D4D4] rounded-[6px] px-[16px] py-[4px] flex items-center gap-[12px] transition-all duration-300 ease-in-out"
-            style={{ width: "480px", minHeight: "60px" }}
+            style={{ width: "100%", maxWidth: "480px", minHeight: "60px" }}
             id="search-container"
           >
             {/* ANIMATED LABEL */}
@@ -235,9 +235,9 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
 
           {/* DROPDOWN SUGGESTIONS */}
           {showDropdown && (
-            <div className="absolute top-full left-[0px] w-[511px] mt-[8px] bg-[#FAFAFA] border-1 border-[#D4D4D4] rounded-[16px] shadow-[0px_8px_24px_rgba(0,0,0,0.1)] z-50">
+            <div className="absolute top-full left-[0px] w-full max-w-[511px] mt-[8px] bg-[#FAFAFA] border-1 border-[#D4D4D4] rounded-[16px] shadow-[0px_8px_24px_rgba(0,0,0,0.1)] z-50">
               {/* SEARCH INPUT INSIDE DROPDOWN - FIXED AT TOP */}
-              <div className="bg-white p-[16px] pb-[12px] border-[#E5E5E5]">
+              <div className="bg-[#FAFAFA] p-[16px] pb-[12px] border-[#E5E5E5] rounded-[16px]">
                 <div className="relative">
                   <svg
                     className="absolute left-[12px] top-[50%] translate-y-[-50%] w-[20px] h-[20px] text-gray-400 pointer-events-none"
@@ -259,7 +259,7 @@ const DeveloperField: React.FC<DeveloperFieldProps> = ({
                       onSearchQueryChange(field.name, e.target.value)
                     }
                     placeholder="Search Developer"
-                    className={`pl-[44px] pr-[12px] w-[423px] py-[12px] border border-[#E5E5E5] rounded-[8px] outline-none ${manrope.className} text-[14px] text-[#262626] placeholder:text-[#9CA3AF] bg-[#FAFAFA] focus:border-[#D4D4D4] transition-colors`}
+                    className={`pl-[44px] pr-[12px] w-full py-[12px] border border-[#E5E5E5] rounded-[8px] outline-none ${manrope.className} text-[14px] text-[#262626] placeholder:text-[#9CA3AF] bg-[#FAFAFA] focus:border-[#D4D4D4] transition-colors`}
                     autoFocus
                   />
                 </div>

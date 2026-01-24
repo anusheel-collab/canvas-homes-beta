@@ -177,7 +177,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     <>
       <div className="w-full max-w-4xl mx-auto px-4">
         {/* FORM CONTAINER */}
-        <div className="bg-white rounded-3xl shadow-lg p-8">
+        <div>
           {/* INVENTORY BADGE */}
           <div className="flex mt-[25px] justify-center mb-8">
             <div className="inline-flex items-center gap-2 rounded-full py-[8px] px-[20px] bg-[#CCFBF1]">

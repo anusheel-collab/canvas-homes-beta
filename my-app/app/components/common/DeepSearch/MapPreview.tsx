@@ -87,11 +87,11 @@ export function MapPreview({
 
         {/* --- OVERLAYS (Top Right) --- */}
         {/* Restored exact original button UI and positioning */}
-        <div className="absolute translate-y-[-270px] translate-x-[400px] top-3 right-3 flex flex-col gap-2 items-end z-10">
+        <div className="absolute translate-y-[-5px] translate-x-[15px] top-3 right-3 flex flex-col gap-2 items-end z-10">
           {location.type !== "current" && (
             <button
               onClick={onOpenMap}
-              className="translate-x-[-10px] w-[80px] h-[37px] rounded-[8px] border-none gap-2 px-3 py-2 bg-blue-600 text-[#FAFAFA] bg-[#262626] text-white text-[14px] font-bold rounded-lg hover:bg-blue-700 transition-all shadow-md active:scale-95 flex items-center justify-center"
+              className="translate-x-[-10px] w-[80px] h-[37px] rounded-[8px] border-none gap-2 px-3 py-2 bg-[#262626] text-[#FAFAFA] bg-[#262626] text-white text-[14px] font-bold rounded-lg hover:bg-[#262626] transition-all shadow-md active:scale-95 flex items-center justify-center"
             >
               <Edit2 className="w-[13.34px] h-[13.34px] color-[#FAFAFA]" />
               Draw
@@ -101,8 +101,8 @@ export function MapPreview({
       </div>
 
       {/* Radius Selector - Kept exactly as your original code */}
-      <div className="translate-y-[-50px] left-0 right-0 h-[55px] px-4 bg-[rgba(255,255,255,0.60)] backdrop-blur-sm border-gray-200/50 rounded-lg z-30">
-        <div className="flex items-center justify-between py-3">
+      <div className="translate-y-[-55px] left-0 right-0 h-[55px] px-4 bg-[rgba(255,255,255,0.60)] backdrop-blur-sm border-gray-200/50 rounded-lg z-30">
+        <div className="flex items-center justify-between ">
           <span className="translate-y-[5px] translate-x-[15px] text-[16px] font-[600] text-[#262626]">
             Preferred Distance
           </span>
@@ -115,7 +115,7 @@ export function MapPreview({
                 }}
                 className={`text-sm w-[57px] h-[37px] rounded-[8px] font-medium transition-all ${
                   radius === option
-                    ? "bg-blue-600 text-white shadow-lg mt-[7px] mr-[10px]"
+                    ? "bg-[#262626] text-white shadow-lg mt-[7px] mr-[10px]"
                     : "bg-white/80 text-gray-800 border mt-[7px] mr-[10px] border-gray-300/70 border-[1px] border-[#D4D4D4] hover:bg-gray-100"
                 }`}
               >

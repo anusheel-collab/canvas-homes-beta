@@ -8,7 +8,7 @@ export default function Loader({ percentage }: LoaderProps) {
   const safePercentage = Math.min(Math.max(percentage, 0), 100);
 
   return (
-    <div className="w-full px-6">
+    <div className="w-full ">
       <div className="relative w-full h-[32px]">
         {/* Background: Unfilled progress - color #D4D4D4 - FULL WIDTH */}
         <div className="absolute top-1/2 -translate-y-1/2 w-full h-[4px] bg-[#D4D4D4] rounded-[8px]" />

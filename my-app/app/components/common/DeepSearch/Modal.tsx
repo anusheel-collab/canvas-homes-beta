@@ -47,15 +47,15 @@ export function Modal({
 
   return (
     <div
-      className={`fixed top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 inset-0 z-[9999] p-4 ${className}`}
+      className={`fixed top-1/2 left-3/7 transform -translate-y-1/2 -translate-x-1/2 inset-0 z-[9999] p-4 ${className}`}
       aria-modal="true"
       role="dialog"
     >
       {/* BACKGROUND OVERLAY - Fixed to viewport */}
-      <div
+      {/* <div
         className="fixed inset-0 z-[9999] flex items-center justify-center bg-gray-800/50 backdrop-blur-sm overflow-y-auto py-8"
         onClick={onClose}
-      />
+      /> */}
 
       {/* MODAL CONTAINER - Centered via Flexbox */}
       <div

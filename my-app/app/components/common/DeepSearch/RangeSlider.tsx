@@ -14,7 +14,7 @@ export default function RangeSlider({
   ...props
 }: RangeSliderProps) {
   return (
-    <div className="relative flex justify-center w-full pr-[480px]">
+    <div className="relative flex justify-center w-full">
       <style jsx global>{`
         /* Completely override rc-slider handle styles */
         .rc-slider-handle {

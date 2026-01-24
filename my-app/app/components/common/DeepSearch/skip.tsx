@@ -21,7 +21,9 @@ export default function SkipButton({
         m-0
         
         text-gray-700
-        text-[16px]
+        text-[14px]
+        sm:text-[15px]
+        md:text-[16px]
         font-medium
         underline
         underline-offset-2

@@ -13,12 +13,11 @@ export default function Header() {
         z-50
         w-full
         h-16
-        px-6
         flex
         items-center
         justify-between
         bg-[#FAFAFA]
-        pt-[2px]  {/* Add 2px top padding */}
+        pt-[2px]
       "
     >
       {/* Left: Logo Button */}
@@ -29,7 +28,7 @@ export default function Header() {
           width={101}
           height={46}
           priority
-          className="cursor-pointer"
+          className="cursor-pointer w-[70px] h-auto sm:w-[85px] md:w-[101px]"
         />
       </Link>
 

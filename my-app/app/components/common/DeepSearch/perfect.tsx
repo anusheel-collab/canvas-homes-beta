@@ -40,10 +40,14 @@ export default function PerfectButton({
   disabled:hover:translate-y-0
   disabled:hover:shadow-none
   
-  p-[12px_62px]
+  p-[12px_30px]
+  sm:p-[12px_45px]
+  md:p-[12px_62px]
   rounded-[8px]
   font-manrope
-  text-[16px]
+  text-[14px]
+  sm:text-[15px]
+  md:text-[16px]
   font-semibold
   leading-[150%]
 `}

@@ -24,11 +24,14 @@ export default function BackButton({
         
         flex
         items-center
-        gap-2
+        gap-1
+        sm:gap-2
         
         text-gray-700
         font-medium
-        text-[16px]
+        text-[14px]
+        sm:text-[15px]
+        md:text-[16px]
 
         transition-all
         duration-150
@@ -47,7 +50,11 @@ export default function BackButton({
         ${className}
       `}
     >
-      <img src="/arrow-left.svg" alt="Back arrow" className="w-5 h-5" />
+      <img
+        src="/arrow-left.svg"
+        alt="Back arrow"
+        className="w-4 h-4 sm:w-5 sm:h-5"
+      />
       {label}
     </button>
   );

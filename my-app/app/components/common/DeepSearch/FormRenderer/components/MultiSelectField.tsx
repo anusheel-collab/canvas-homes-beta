@@ -52,7 +52,7 @@ const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
                     : [...selectedValues, option.value],
                 )
               }
-              className={`relative text-center transition-all bg-[#FAFAFA] py-[12px_20px] px-[16px] rounded-[16px] ${
+              className={`relative text-center transition-all bg-[#FAFAFA] px-[16px] rounded-[16px] ${
                 isSelected
                   ? "border-2 border-black"
                   : "border-2 border-[#A3A3A3]"
