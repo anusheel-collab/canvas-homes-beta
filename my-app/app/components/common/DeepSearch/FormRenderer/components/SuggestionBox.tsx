@@ -32,7 +32,7 @@ const SuggestionBox: React.FC<SuggestionBoxProps> = ({
 
   return (
     <div
-      className="absolute left-0 z-10 mt-[12px] w-[416px] max-h-[306px] rounded-[6px] overflow-y-auto bg-[#FAFAFA] rounded-2xl shadow-xl border border-[#D4D4D4] py-[16px] px-[16px]"
+      className="absolute left-1/2 -translate-x-1/2 z-10 mt-[12px] w-[362px] md:w-[448px] max-h-[306px] rounded-[6px] overflow-y-auto bg-[#FAFAFA] shadow-xl border border-[#D4D4D4] py-[12px] md:py-[16px] px-[12px] md:px-[16px]"
       style={{
         scrollbarWidth: "thin",
         scrollbarColor: "#D9D9D9 #F5F5F5",
@@ -56,39 +56,38 @@ const SuggestionBox: React.FC<SuggestionBoxProps> = ({
           background: #a3a3a3;
         }
       `}</style>
-      <div className="text-[12px] text-[#525252] font-medium">
+      <div className="text-[11px] md:text-[12px] text-[#525252] font-medium mb-1">
         Suggestive Searches
       </div>
+
       {/* MAP SEARCH OPTION - ALWAYS SHOW AT TOP */}
       <div
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-
-          // First, scroll to top to ensure modal opens centered
           window.scrollTo({ top: 0, behavior: "instant" });
-
-          // Close suggestions
           onClose?.();
-
-          // Force a small delay to ensure scroll completes
           setTimeout(() => {
             onOpenMap();
           }, 10);
         }}
-        className="group px-[8px] py-[10px] hover:bg-[#F5F5F5] cursor-pointer flex items-center gap-4 rounded-[6px] transition-colors border-gray-100"
+        className="group px-[6px] md:px-[8px] py-[8px] md:py-[10px] hover:bg-[#F5F5F5] cursor-pointer flex items-center gap-2 md:gap-4 rounded-[6px] transition-colors border-gray-100"
       >
-        <div className="w-10 h-10 bg-[#F5F5F5] rounded-[8px] px-[12px] py-[12px] flex items-center justify-center group-hover:bg-[#D4D4D4] transition-colors">
-          <img src="/pointer.svg" alt="Draw on map" className="w-5 h-5" />
+        <div className="w-8 h-8 md:w-10 md:h-10 bg-[#F5F5F5] rounded-[8px] p-[10px] md:p-[12px] flex items-center justify-center group-hover:bg-[#D4D4D4] transition-colors flex-shrink-0">
+          <img
+            src="/pointer.svg"
+            alt="Draw on map"
+            className="w-4 h-4 md:w-5 md:h-5"
+          />
         </div>
-        <div className="flex flex-col flex-1">
-          <span className="font-semibold pl-[8px] font-manrope text-[16px] text-[#262626]">
+        <div className="flex flex-col flex-1 min-w-0">
+          <span className="font-semibold pl-[4px] md:pl-[8px] font-manrope text-[14px] md:text-[16px] text-[#262626] truncate">
             Draw the location
           </span>
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto flex-shrink-0">
           <svg
-            className="w-5 h-5 text-gray-400"
+            className="w-4 h-4 md:w-5 md:h-5 text-gray-400"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -106,29 +105,33 @@ const SuggestionBox: React.FC<SuggestionBoxProps> = ({
       {/* MY LOCATION OPTION */}
       <div
         onClick={() => !isLocating && getCurrentLocation()}
-        className={`group px-[8px] py-[10px] flex items-center gap-4 rounded-[6px] transition-colors border-gray-100 ${
+        className={`group px-[6px] md:px-[8px] py-[8px] md:py-[10px] flex items-center gap-2 md:gap-4 rounded-[6px] transition-colors border-gray-100 ${
           isLocating
             ? "cursor-not-allowed opacity-60"
             : "hover:bg-[#F5F5F5] cursor-pointer"
         }`}
       >
-        <div className="w-10 h-10 bg-[#F5F5F5] rounded-[8px] px-[12px] py-[12px] flex items-center justify-center group-hover:bg-[#D4D4D4] transition-colors">
+        <div className="w-8 h-8 md:w-10 md:h-10 bg-[#F5F5F5] rounded-[8px] p-[10px] md:p-[12px] flex items-center justify-center group-hover:bg-[#D4D4D4] transition-colors flex-shrink-0">
           {isLocating ? (
-            <div className="w-5 h-5 border-2 border-green-300 border-t-green-600 rounded-full animate-spin"></div>
+            <div className="w-4 h-4 md:w-5 md:h-5 border-2 border-green-300 border-t-green-600 rounded-full animate-spin"></div>
           ) : (
-            <img src="/locate.svg" alt="Locate" className="w-5 h-5" />
+            <img
+              src="/locate.svg"
+              alt="Locate"
+              className="w-4 h-4 md:w-5 md:h-5"
+            />
           )}
         </div>
-        <div className="flex flex-col flex-1">
-          <span className="text-gray-800 pl-[8px] font-semibold font-manrope text-[16px] text-[#262626]">
+        <div className="flex flex-col flex-1 min-w-0">
+          <span className="text-gray-800 pl-[4px] md:pl-[8px] font-semibold font-manrope text-[14px] md:text-[16px] text-[#262626] truncate">
             {isLocating
               ? "Getting your location..."
               : "Use My Current Location"}
           </span>
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto flex-shrink-0">
           <svg
-            className="w-5 h-5 text-gray-400"
+            className="w-4 h-4 md:w-5 md:h-5 text-gray-400"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -145,10 +148,10 @@ const SuggestionBox: React.FC<SuggestionBoxProps> = ({
 
       {/* LOCATION ERROR MESSAGE */}
       {locationError && (
-        <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-lg mx-4 my-2">
+        <div className="px-3 md:px-4 py-2 md:py-3 bg-red-50 border border-red-200 rounded-lg mx-2 md:mx-4 my-2">
           <div className="flex items-center">
             <svg
-              className="w-5 h-5 text-red-500 mr-2"
+              className="w-4 h-4 md:w-5 md:h-5 text-red-500 mr-2 flex-shrink-0"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -158,7 +161,7 @@ const SuggestionBox: React.FC<SuggestionBoxProps> = ({
                 clipRule="evenodd"
               />
             </svg>
-            <span className="text-sm text-red-700 font-medium">
+            <span className="text-xs md:text-sm text-red-700 font-medium">
               {locationError}
             </span>
           </div>
@@ -168,18 +171,18 @@ const SuggestionBox: React.FC<SuggestionBoxProps> = ({
       {/* REGULAR SUGGESTIONS (ONLY SHOW WHEN USER HAS TYPED) */}
       {suggestions.length > 0 && (
         <>
-          <div className="px-4 py-2 bg-gray-50"></div>
+          <div className="px-2 md:px-4 py-2 bg-gray-50"></div>
           {suggestions.map((suggestion, idx) => (
             <div
               key={idx}
               onClick={() => selectSuggestion(fieldName, suggestion)}
-              className="group px-[8px] py-[10px] hover:bg-[#F5F5F5] cursor-pointer flex items-center gap-4 rounded-[6px] transition-colors"
+              className="group px-[6px] md:px-[8px] py-[8px] md:py-[10px] hover:bg-[#F5F5F5] cursor-pointer flex items-center gap-2 md:gap-4 rounded-[6px] transition-colors"
             >
-              <div className="w-10 h-10 bg-[#F5F5F5] rounded-[8px] px-[12px] py-[12px] flex items-center justify-center group-hover:bg-[#D4D4D4] transition-colors">
-                <MapPin className="w-5 h-5 stroke-[#525252]" />
+              <div className="w-8 h-8 md:w-10 md:h-10 bg-[#F5F5F5] rounded-[8px] p-[10px] md:p-[12px] flex items-center justify-center group-hover:bg-[#D4D4D4] transition-colors flex-shrink-0">
+                <MapPin className="w-4 h-4 md:w-5 md:h-5 stroke-[#525252]" />
               </div>
 
-              <span className="text-gray-700 font-medium font-manrope text-[16px] text-[#262626] p-[8px]">
+              <span className="text-gray-700 font-medium font-manrope text-[14px] md:text-[16px] text-[#262626] p-[4px] md:p-[8px] truncate">
                 {suggestion}
               </span>
             </div>
@@ -189,7 +192,7 @@ const SuggestionBox: React.FC<SuggestionBoxProps> = ({
 
       {/* EMPTY STATE MESSAGE WHEN NO SUGGESTIONS */}
       {suggestions.length === 0 && searchQuery[fieldName]?.length > 0 && (
-        <div className="px-4 py-3 text-center text-gray-500">
+        <div className="px-3 md:px-4 py-3 text-center text-gray-500 text-xs md:text-sm">
           No locations found. Try a different search term.
         </div>
       )}

@@ -62,9 +62,11 @@ const LocationField: React.FC<LocationFieldProps> = ({
 
   return (
     <>
-      <div className="relative w-full max-w-[448px] mx-auto autocomplete-container">
-        <div className="flex items-center gap-3 bg-[#FAFAFA] border border-[#D4D4D4] py-[10px] px-[16px] rounded-[6px] transition-colors">
-          {Icon && <Icon className="w-5 h-5 text-[#737373]" />}
+      <div className="relative w-full mx-auto autocomplete-container">
+        <div className="flex items-center gap-2 sm:gap-3 bg-[#FAFAFA] border border-[#D4D4D4] py-[8px] md:py-[10px] px-[12px] md:px-[16px] rounded-[6px] transition-colors w-[362px] md:w-[448px] h-[60px] md:h-[52px] mx-auto">
+          {Icon && (
+            <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#737373] flex-shrink-0" />
+          )}
 
           <input
             type="text"
@@ -84,7 +86,7 @@ const LocationField: React.FC<LocationFieldProps> = ({
               }
             }}
             placeholder={field.placeholder}
-            className="flex-1 outline-none text-gray-800 placeholder:text-[#737373] font-manrope text-[14px] font-normal py-[12px] bg-[#FAFAFA]"
+            className="flex-1 outline-none text-gray-800 placeholder:text-[#737373] font-manrope text-[12px] sm:text-[14px] font-normal py-[10px] sm:py-[12px] bg-[#FAFAFA] min-w-0"
             style={{
               border: "none",
             }}
@@ -107,10 +109,9 @@ const LocationField: React.FC<LocationFieldProps> = ({
       </div>
 
       {currentStep === 0 && showMapPreview && selectedLocation && (
-        <div className="mt-8 flex flex-col items-center">
+        <div className="mt-6 sm:mt-8 flex flex-col items-center px-4">
           <MapPreview
             location={selectedLocation}
-            // Logic: Fallback to 5 if the parent state is uninitialized
             radius={selectedRadius || 5}
             onRadiusChange={onSetSelectedRadius}
             onOpenMap={() => onSetShowMapModal(true)}
