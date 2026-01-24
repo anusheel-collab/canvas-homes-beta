@@ -190,7 +190,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
           </div>
 
           {/* STEP TITLE */}
-          <h2 className="text-center mb-12 max-w-[690px] mx-auto leading-tight font-archivo text-[36px] font-semibold text-[#404040]">
+          <h2 className="text-center mb-12 max-w-[690px] mx-auto leading-tight font-archivo text-[24px] sm:text-[28px]  md:text-[34px] lg:text-[36px] font-semibold text-[#404040]">
             {currentTitle}
           </h2>
 

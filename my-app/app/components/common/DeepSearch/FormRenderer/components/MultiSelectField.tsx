@@ -37,7 +37,7 @@ const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
 
   if (visualMode) {
     return (
-      <div className="flex flex-wrap justify-center gap-[24px] max-w-[calc(3*168px+2*24px)] mx-auto">
+      <div className="flex flex-wrap justify-center gap-[16px] md:gap-[20px] lg:gap-[24px] max-w-[calc(2*137px+1*16px)] md:max-w-[calc(3*168px+2*20px)] lg:max-w-[calc(3*168px+2*24px)] mx-auto">
         {filteredOptions.map((option: any) => {
           const isSelected = selectedValues.includes(option.value);
 
@@ -52,50 +52,50 @@ const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
                     : [...selectedValues, option.value],
                 )
               }
-              className={`relative text-center transition-all bg-[#FAFAFA] px-[16px] rounded-[16px] ${
+              className={`relative text-center transition-all bg-[#FAFAFA] px-[8px] md:px-[10px] lg:px-[12px] rounded-[12px] md:rounded-[14px] lg:rounded-[16px] w-[137px] md:w-[168px] lg:w-[168px] h-[138px] md:h-[155px] lg:h-[197px] ${
                 isSelected
                   ? "border-2 border-black"
                   : "border-2 border-[#A3A3A3]"
               }`}
-              style={{
-                width: "168px",
-              }}
             >
-              <div className="flex flex-col items-center gap-3">
+              <div className="flex flex-col items-center gap-0 h-full justify-between py-[6px] md:py-[8px] lg:py-[10px]">
                 {/* ICON */}
                 {option.icon && (
-                  <div className="w-[165px] h-[120px] flex items-center justify-center">
+                  <div className="w-[113px] h-[80px] md:w-[140px] md:h-[100px] lg:w-[140px] lg:h-[100px] flex items-center justify-center">
                     {option.icon}
                   </div>
                 )}
 
                 {/* LABEL */}
-                <div className="font-manrope text-[18px] font-semibold text-gray-800 w-[168px] h-[36px]">
+                <div className="font-manrope text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-gray-800 flex items-center justify-center px-1">
                   {option.label}
                 </div>
 
                 {/* SELECTION CHECKBOX */}
-                <Checkbox
-                  checked={isSelected}
-                  onChange={() =>
-                    onFieldChange(
-                      field.name,
-                      isSelected
-                        ? selectedValues.filter((v) => v !== option.value)
-                        : [...selectedValues, option.value],
-                    )
-                  }
-                  size="small"
-                  sx={{
-                    color: "#D1D5DB",
-                    "&.Mui-checked": {
-                      color: "#000000",
-                    },
-                    "& .MuiSvgIcon-root": {
-                      fontSize: 29,
-                    },
-                  }}
-                />
+                <div className="flex items-center justify-center">
+                  <Checkbox
+                    checked={isSelected}
+                    onChange={() =>
+                      onFieldChange(
+                        field.name,
+                        isSelected
+                          ? selectedValues.filter((v) => v !== option.value)
+                          : [...selectedValues, option.value],
+                      )
+                    }
+                    size="small"
+                    sx={{
+                      color: "#D1D5DB",
+                      "&.Mui-checked": {
+                        color: "#000000",
+                      },
+                      "& .MuiSvgIcon-root": {
+                        fontSize: { xs: 20, md: 22, lg: 24 },
+                      },
+                      padding: "4px",
+                    }}
+                  />
+                </div>
               </div>
             </button>
           );
