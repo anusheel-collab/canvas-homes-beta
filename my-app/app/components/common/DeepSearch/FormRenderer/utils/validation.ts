@@ -14,9 +14,38 @@ export const validateStep = (
     return !!selectedLocation && !!formData["location"];
   }
 
+  // Special handling for projectType step
+  if (currentStepConfig.id === "projectType") {
+    // First check if projectType itself is selected
+    const projectTypes = formData["projectType"];
+    const hasProjectType =
+      Array.isArray(projectTypes) && projectTypes.length > 0;
+
+    if (!hasProjectType) return false;
+
+    // Check if underConstruction is selected
+    const isUnderConstructionSelected =
+      projectTypes.includes("underConstruction");
+
+    // If underConstruction is selected, possession field must also be selected
+    if (isUnderConstructionSelected) {
+      const possessionValue = formData["possessionBy"];
+      return !!possessionValue;
+    }
+
+    // If underConstruction is NOT selected, just projectType selection is enough
+    return true;
+  }
+
   // For other steps, use original validation
   return visibleFields.every((field) => {
+    // Skip validation if field has a condition and the condition is not met
+    if (field.condition && !field.condition(formData)) {
+      return true;
+    }
+
     if (!field.required) return true;
+
     const value = formData[field.name];
     if (!value) return false;
     if (Array.isArray(value)) return value.length > 0;

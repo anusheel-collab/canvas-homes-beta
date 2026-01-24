@@ -62,8 +62,8 @@ const LocationField: React.FC<LocationFieldProps> = ({
 
   return (
     <>
-      <div className="relative w-full mx-auto autocomplete-container">
-        <div className="flex items-center gap-2 sm:gap-3 bg-[#FAFAFA] border border-[#D4D4D4] py-[8px] md:py-[10px] px-[12px] md:px-[16px] rounded-[6px] transition-colors w-[362px] md:w-[448px] h-[60px] md:h-[52px] mx-auto">
+      <div className="relative w-full mx-auto autocomplete-container px-2">
+        <div className="flex items-center gap-2 sm:gap-3 bg-[#FAFAFA] border border-[#D4D4D4] py-[8px] md:py-[10px] px-[12px] md:px-[16px] rounded-[6px] transition-colors w-full max-w-[362px] md:max-w-[448px] h-[60px] md:h-[52px] mx-auto">
           {Icon && (
             <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#737373] flex-shrink-0" />
           )}

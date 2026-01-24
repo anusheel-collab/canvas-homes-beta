@@ -298,7 +298,7 @@ export const formConfig: FormConfig = {
       fields: [
         {
           name: "projectType",
-          type: "multiselect",
+          type: "multiselect", // Changed from "singleselect"
           label: "Project Type",
           required: true,
           icon: Building2,
@@ -324,8 +324,14 @@ export const formConfig: FormConfig = {
             { value: "3yr-4yr", label: "3 Yr - 4 Yr" },
             { value: "4+yrs", label: "4+ Yrs" },
           ],
-          condition: (formData: any) =>
-            formData.projectType && formData.projectType.length > 0,
+          condition: (formData: any) => {
+            // Check if projectType is an array and contains "underConstruction"
+            const projectTypes = formData.projectType || [];
+            return (
+              Array.isArray(projectTypes) &&
+              projectTypes.includes("underConstruction")
+            );
+          },
         },
       ],
     },

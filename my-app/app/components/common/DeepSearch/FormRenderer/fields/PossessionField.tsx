@@ -1,5 +1,6 @@
 import React from "react";
 import { Manrope } from "next/font/google";
+
 interface PossessionFieldProps {
   field: any;
   formData: any;
@@ -14,6 +15,20 @@ const PossessionField: React.FC<PossessionFieldProps> = ({
   onFieldChange,
 }) => {
   const selectedValue = formData[field.name];
+  const optionsCount = field.options?.length || 0;
+
+  // Calculate button width based on number of options to fit in one line
+  // Total available width: 555px - 40px (padding) = 515px
+  // Account for gaps: (optionsCount - 1) * 12px
+  const getButtonWidth = () => {
+    const containerWidth = 515; // 555 - 40 (left/right padding)
+    const totalGap = (optionsCount - 1) * 12; // gaps between buttons
+    const availableWidth = containerWidth - totalGap;
+    const buttonWidth = Math.floor(availableWidth / optionsCount);
+    return buttonWidth;
+  };
+
+  const buttonWidth = getButtonWidth();
 
   return (
     <div className="flex justify-center px-4 sm:px-0">
@@ -22,7 +37,7 @@ const PossessionField: React.FC<PossessionFieldProps> = ({
         <div className="font-manrope text-[16px] font-medium text-[#737373]">
           Possession By
         </div>
-        <div className="flex gap-[8px] sm:gap-[12px] flex-wrap sm:flex-nowrap overflow-x-auto">
+        <div className="flex gap-[12px]">
           {field.options?.map((option: any) => {
             const isSelected = selectedValue === option.value;
             return (
@@ -31,9 +46,13 @@ const PossessionField: React.FC<PossessionFieldProps> = ({
                 onClick={() => onFieldChange(field.name, option.value)}
                 className={`${
                   manrope.className
-                } text-[14px] sm:text-[16px] font-semibold text-[#404040] transition-all min-w-[100px] sm:w-[120px] h-[48px] rounded-[8px] bg-white border flex items-center justify-center flex-shrink-0 ${
+                } text-[14px] sm:text-[16px] font-semibold text-[#404040] transition-all h-[48px] rounded-[8px] bg-white border flex items-center justify-center ${
                   isSelected ? "border-black" : "border-[#D4D4D4]"
                 }`}
+                style={{
+                  width: `${buttonWidth}px`,
+                  minWidth: "auto",
+                }}
               >
                 {option.label}
               </button>

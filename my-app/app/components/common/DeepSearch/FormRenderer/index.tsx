@@ -55,6 +55,17 @@ const FormRenderer: React.FC<FormRendererProps> = ({
 
   // Render field based on type
   const renderField = (field: FormField) => {
+    // Handle projectType BEFORE checking the type
+    if (field.name === "projectType") {
+      return (
+        <ProjectTypeField
+          field={field}
+          formData={formData}
+          onFieldChange={handleFieldChange}
+        />
+      );
+    }
+
     switch (field.type) {
       case "autocomplete":
         return (
@@ -106,22 +117,12 @@ const FormRenderer: React.FC<FormRendererProps> = ({
         );
 
       case "singleselect":
-        // 1. Check for Project Type first
-        if (field.name === "projectType") {
-          return (
-            <ProjectTypeField
-              field={field}
-              formData={formData}
-              onFieldChange={handleFieldChange}
-            />
-          );
-        }
-
-        // 2. Check if this is the possessionBy field
+        // Check if this is the possessionBy field
         if (field.name === "possessionBy") {
-          // Only show PossessionField if "underConstruction" is selected in the projectType array
+          // Check if "underConstruction" is in the selected array
+          const projectTypes = formData.projectType || [];
           const isUnderConstruction =
-            formData.projectType?.includes("underConstruction");
+            projectTypes.includes("underConstruction");
 
           if (isUnderConstruction) {
             return (
@@ -136,6 +137,8 @@ const FormRenderer: React.FC<FormRendererProps> = ({
           // If not underConstruction, return null so it stays hidden
           return null;
         }
+        return null;
+
       case "range":
         if (field.name === "budget") {
           return (
