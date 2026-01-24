@@ -39,7 +39,7 @@ export const useFormLogic = (
   const [selectedLocation, setSelectedLocation] =
     useState<FormLogicState["selectedLocation"]>(null);
   const [selectedRadius, setSelectedRadius] =
-    useState<FormLogicState["selectedRadius"]>(2);
+    useState<FormLogicState["selectedRadius"]>(5); // Changed from 2 to 5
   const [showMapPreview, setShowMapPreview] =
     useState<FormLogicState["showMapPreview"]>(false);
 
