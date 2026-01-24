@@ -23,15 +23,7 @@ export function MapModal({
   const [isClient, setIsClient] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const hasOpenedRef = useRef(false);
-  // Where you call the Modal (e.g., in MapModal.tsx or LocationField.tsx)
-  const centerModalStyles = "top-1/2 transform -translate-y-1/2 -translate-x-1/2"
 
-  // // Or for perfect center with translate:
-  // const centerModalStyles =
-  //   "flex items-center justify-center translate-x-0 translate-y-0";
-
-  // // Or remove all translations to center it:
-  // const centerModalStyles = "";
   useEffect(() => {
     setIsClient(true);
     // Set ready state after a small delay to ensure DOM is ready
@@ -42,7 +34,9 @@ export function MapModal({
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(()=>{console.log("Hare Krishna",isOpen)},[isOpen])
+  useEffect(() => {
+    console.log("Hare Krishna", isOpen);
+  }, [isOpen]);
 
   // Reset ready state when modal opens
   useEffect(() => {
@@ -94,21 +88,19 @@ export function MapModal({
       isOpen={isOpen}
       onClose={onClose}
       size="map"
-      className={centerModalStyles}
+      className="" // Remove custom positioning classes
     >
-      
-        {/* Always render GoogleMapContainer when modal is open and ready */}
-        {isOpen && isReady && (
-          <div className="w-full h-full relative">
-            <GoogleMapContainer
-              isModal={true}
-              initialCenter={initialLocation}
-              onMapSelect={onMapSelect}
-              onClose={onClose}
-            />
-          </div>
-        )}
-    
+      {/* Always render GoogleMapContainer when modal is open and ready */}
+      {isOpen && isReady && (
+        <div className="w-full h-full relative">
+          <GoogleMapContainer
+            isModal={true}
+            initialCenter={initialLocation}
+            onMapSelect={onMapSelect}
+            onClose={onClose}
+          />
+        </div>
+      )}
     </Modal>
   );
 }

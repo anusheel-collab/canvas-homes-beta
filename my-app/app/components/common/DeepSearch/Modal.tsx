@@ -40,34 +40,37 @@ export function Modal({
     lg: "max-w-4xl",
     xl: "max-w-6xl",
     full: "max-w-[95vw] h-[90vh]",
-    map: "w-[1236px] h-[576px]",
+    // Desktop: fixed size, Mobile/Tablet: fullscreen
+    map: "lg:w-[1236px] lg:h-[576px] w-full h-full lg:max-w-[1236px] lg:max-h-[576px]",
   };
 
   const isMapSize = size === "map";
 
   return (
     <div
-      className={`fixed top-1/2 left-3/7 transform -translate-y-1/2 -translate-x-1/2 inset-0 z-[9999] p-4 ${className}`}
+      className={`fixed inset-0 z-[9999] flex items-center justify-center p-0 lg:p-4 ${className}`}
       aria-modal="true"
       role="dialog"
     >
-      {/* BACKGROUND OVERLAY - Fixed to viewport */}
-      {/* <div
-        className="fixed inset-0 z-[9999] flex items-center justify-center bg-gray-800/50 backdrop-blur-sm overflow-y-auto py-8"
-        onClick={onClose}
-      /> */}
-
-      {/* MODAL CONTAINER - Centered via Flexbox */}
+      {/* BACKGROUND OVERLAY */}
       <div
-        className={`relative z-10 ${sizeClasses[size]} transition-all my-auto ${
+        className="fixed inset-0 bg-gray-800/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* MODAL CONTAINER */}
+      <div
+        className={`relative z-10 ${sizeClasses[size]} transition-all ${
           isMapSize
-            ? "w-[1236px] h-[576px] border-[0px] border-[#FFFFFF] rounded-[24px] bg-[#FFFFFF] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]"
+            ? "lg:border-[0px] lg:border-[#FFFFFF] lg:rounded-[24px] rounded-none bg-[#FFFFFF] lg:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] shadow-none"
             : ""
         }`}
       >
         <div
           className={`bg-white h-full w-full overflow-hidden ${
-            !isMapSize ? "rounded-2xl shadow-2xl" : "rounded-[8px]"
+            !isMapSize
+              ? "rounded-2xl shadow-2xl"
+              : "lg:rounded-[8px] rounded-none"
           }`}
         >
           {/* Header - Only for standard modals, skipped for Map size */}
